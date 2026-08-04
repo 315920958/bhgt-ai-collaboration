@@ -1,0 +1,155 @@
+# TapTap H5 接入分析（BHGT）
+
+> 目标：把肉鸽修仙剧情 H5 小游戏 BHGT 上架 TapTap。
+> 当前状态：尚未注册 / 认证开发者（2026-08-04 起进入调研与准备阶段）。
+> 本文结论基于 TapTap 官方开发者文档 + 小游戏 API 文档 + 快速上架公告 + 防沉迷规范核对，并经用户拍板。
+
+---
+
+## 0. 结论速览
+
+| 项 | 决策 |
+|---|---|
+| 发布形态 | 走 **H5 游戏通道（WebView 渲染，DOM 可用）**，不走小游戏包通道 |
+| 客户端 | React 18 + Vite + TS，按普通 Web App 开发；路由统一 **HashRouter** |
+| 上传物 | `npm run build` 产物 `dist`，经 H5 上传工具发到 TapTap |
+| 登录 | 双模式：`dev` 万能登录（仅非生产开放）/ `prod` TapTap OAuth2；配置守卫 |
+| 商业化 | **灵石不可购 → 无内购 → 免版号**，以「开放试玩」形式长期运营 |
+| 合规底线 | 防沉迷实名**强制**（含测试态、无游客例外）；隐私合规 + ICP 备案（联网） |
+| 开发者认证 | 用户自行办理（个人=身份证，约 2 工作日），拿到 appid/clientId 后填 SDK 初始化 |
+
+---
+
+## 1. 两条上架通道的关键区别（核心决策依据）
+
+TapTap 实际有两条上架通道，早期调研对话将其混为一谈，必须区分：
+
+### A. 小游戏包通道（即时小游戏 / instant minigame）
+- 运行在 **JS VM**，**没有 BOM/DOM、没有 window/document**。
+- 需 `game.js` / `game.json` 固定结构 + 引擎 Adapter（Cocos/Laya/Egret 自带抹平层）。
+- canvas 类渲染游戏走这条。
+- React-DOM 文字游戏若无额外 DOM shim 无法直接运行。
+
+官方依据：`developer.taptap.cn/minigameapidoc/dev/tutorial/overview/`
+> "小游戏的运行环境不同于 Web 环境，在真机上运行时，没有 BOM API，因此也就没有 window 对象以及其上面的各种属性。"
+
+### B. H5 游戏通道（H5 game / 快速上架）
+- 开发者后台「快速上架」：**"你只需准备好 H5 游戏包，无需等待认证审核即可上架，移动端和 Web 端都能体验"**。
+- 本质是 **WebView / 浏览器渲染，DOM 完整可用**。
+- 上传构建产物（如 Vite 的 `dist`），平台负责加载；无需自有服务器 / Nginx / 路由重写。
+- 上传工具：`prepare_h5_upload` / `upload_h5_game`（或 `@taptap/tds-mcp-server`），也可后台直接传。
+
+官方依据：`m.taptap.cn/moment/684468229845813399`（快速上架公告）
+
+### 选型结论
+**BHGT 是纯 DOM 文字 + 按钮驱动的剧情游戏，没有 canvas 渲染 → 选 B（H5 游戏通道）。**
+B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所谓"把 React 转成 TapTap 项目"的"工具"在此就是 H5 上传 / 构建流水线，而非 React→canvas 转译器。h5-client 不用为 canvas 做任何事。
+
+---
+
+## 2. 客户端（bhgt-h5-client）约定
+
+- 技术栈：React 18 + Vite + TypeScript + axios（端口 4002，`/api` → 4001）。
+- 开发方式：按标准 React Web App 写，浏览器调试、生态（antd / redux / axios）照用。
+- **路由：统一 `HashRouter`**（`#/page1` 形式），不依赖 `window.history`，避免任何环境差异风险。（注：B 通道其实有 window，`BrowserRouter` 也能跑，但统一 HashRouter 最稳。）
+- 上传物：`npm run build` 产物 `dist`。
+- 不碰 canvas，无需 DOM shim / 适配层。
+- 部署相关（Nginx、自有服务器、路由重写）由 TapTap 平台托管，无需关心。
+
+---
+
+## 3. 登录体系（双模式）
+
+同一套客户端，靠配置切换两条登录链路。
+
+### 开发态（仅 dev）
+- 入口：`/auth/dev-login`（万能登录界面 / 接口）。
+- 行为：任意 `userId` → 直接返回 dev token；可造测试档案、跳过实名。
+- 守卫：仅 `NODE_ENV !== 'production'`（或 `AUTH_MODE === 'dev'`）时开放。
+- **生产编译中必须彻底不暴露该路由。**
+- 官方支撑：TapTap 防沉迷测试账号允许使用**自定义唯一标识**（不强制 unionid）→ developer.taptap.com/docs/v3/sdk/anti-addiction/features/
+
+### 生产态（TapTap OAuth2）
+1. 客户端 `tap.login()` → 平台返回临时 `code`。
+2. 客户端把 `code` 发给 `/auth/taptap-login`。
+3. 服务端用 `code` 调 TapTap `code2Session` → 得 `openid` / `unionid`（`session_key` **只留服务端、绝不下发**）。
+4. 服务端据此发自定义 token 给客户端，后续通信用该 token。
+5. 强制接入 TapTap 防沉迷 SDK（实名认证）。
+
+### 玩家唯一标识
+- dev：自定义 userId（跑通全流程、造测试档）。
+- prod：TapTap `openid`（天然主键，服务局外成长 / meta 进度）。
+
+---
+
+## 4. 服务端（bhgt-server）待办
+
+新增 `auth` 模块，双模式：
+- `dev`：`/auth/dev-login` 万能登录（仅非生产开放）。
+- `taptap`：生产 `/auth/taptap-login`（`code` → code2Session → openid → token）。
+
+用 `AUTH_MODE` 配置或 `NODE_ENV` 守卫 dev 接口。其余核心逻辑（战斗判定、存档、配置驱动）原样保留，客户端包仍走 `/api`。
+
+---
+
+## 5. 合规与资质
+
+官方资质矩阵（`developer.taptap.cn/docs/store/standardies-operation`）：
+
+| 游戏性质 | 所需资质 | 上架形式 |
+|---|---|---|
+| 联网 + 无内购 | ICP 备案 + 防沉迷认证 + 隐私合规 | **开放试玩** |
+| 联网 + 有内购 | 版号 + 软著 + ICP + 防沉迷 + 隐私 | 正式上线 |
+
+- **BHGT = 联网 + 无内购（灵石不可购）→ 免版号，走「开放试玩」**，可长期运营，不必啃版号。
+- **防沉迷实名是强制底线**：所有联网游戏（含测试态、无游客例外）必须接入，绕不掉；但是套 SDK，不是版号。
+- 内容红线（`developer.taptap.cn/minigameapidoc/tap-operation/operation-standards/content-standards/`）：
+  - 禁止出现 ¥ / $ 等现金符号或暗示真实货币交易 → BHGT 用「灵石」虚拟币且不可购，合规；但 **UI 中绝不能出现 ¥ / $ 字样**。
+  - 禁止赌博 / 博彩框架 → 战斗 / 投掷（roll）机制需规避赌博表述。
+
+---
+
+## 6. 开发者认证（用户自行办理）
+
+- 注册开发者（免审，功能受限）/ 认证开发者（约 2 工作日；个人主体=身份证，企业主体=营业执照）。
+- 快速上架可"无需等待认证审核"先发 H5，但正式能力 / 财务仍要认证开发者身份。
+- 拿到 **appid / clientId** 后，填入 TapSDK 初始化（早起初始化，如 `App.tsx` 的 `useEffect`）。
+- 当前由用户本人推进，有消息再同步；AI 侧暂不介入。
+
+---
+
+## 7. 落地步骤与责任分工
+
+**现在可做（不阻塞开发）**
+- h5-client：按 React + Vite 正常开发，路由统一 HashRouter。
+- bhgt-server：设计 `auth` 模块双模式，先实现 `dev` 万能登录打通全流程。
+
+**用户侧**
+- 去 TapTap 开发者中心认证开发者，拿到 appid 后告知。
+
+**上线前（不紧急）**
+- 接 TapTap 防沉迷 SDK + 隐私合规。
+- ICP 备案（联网）。
+- 用 H5 上传工具发 `dist` 到 TapTap，走「开放试玩」。
+
+---
+
+## 8. 待确认 / 开放项
+
+1. **B 通道运行时是否确为 WebView**：依据公告与 H5 形态强烈推断为 WebView / DOM 可用，注册后建议真机 / 后台实测确认一次。
+2. **广告接入**：H5 小游戏广告走「开发者中心 - 小游戏广告」（激励视频 / 插屏 / Banner），与 v0.0.2 记录的「真实 TapTap 广告接入待调研」「Demo 先用模拟广告」需衔接，单独另立调研。
+3. **防沉迷测试账号接入细节**：自定义唯一标识如何在测试账号体系内落地，待注册后查 SDK 文档。
+4. **正式上线路径**：若未来要做「正式上线 / 开放内购」，需补版号 + 软著；当前无此计划（灵石不可购）。
+
+---
+
+## 参考来源
+
+- 小游戏运行环境（无 window/DOM）：`developer.taptap.cn/minigameapidoc/dev/tutorial/overview/`
+- 引擎适配原理（Adapter 抹平 BOM/DOM）：`developer.taptap.cn/minigameapidoc/dev/engine/Cocos-Laya-Egret/`
+- 开发者注册 / 认证：`developer.taptap.io/docs/zh-Hans/store`、`developer.taptap.com/docs/store/`
+- 游戏资质矩阵 + 防沉迷要求：`developer.taptap.cn/docs/store/standardies-operation`
+- 实名认证与防沉迷功能（测试账号自定义标识）：`developer.taptap.com/docs/v3/sdk/anti-addiction/features/`
+- 快速上架（H5 游戏包）：`m.taptap.cn/moment/684468229845813399`
+- 小游戏内容规范（禁现金符号 / 赌博）：`developer.taptap.cn/minigameapidoc/tap-operation/operation-standards/content-standards/`
+- TapTap Maker / H5 上传 MCP：`https://raw.githubusercontent.com/taptap/instant-games-open-mcp/main/README.md`
