@@ -1,0 +1,9 @@
+# OS
+.DS_Store
+
+# project data (WorkBuddy memory, not source)
+.workbuddy/
+
+# dependencies
+node_modules/
+dist/
