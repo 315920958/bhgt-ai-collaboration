@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天赋管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>天赋管理</h2><div class="sub">天赋配置 / 品质 / 开局 / 评分档位 / 数量上限</div></div><button class="btn btn-primary btn-sm">+ 新增天赋</button></div>
+  <div class="tabs">
+    <div class="tab active">天赋列表</div><div class="tab">品质配置</div><div class="tab">开局配置</div><div class="tab">通关评分档位</div><div class="tab">可选数量上限</div>
+  </div>
+  <table class="admin-table">
+    <thead><tr><th>天赋ID</th><th>名称</th><th>品质</th><th>说明</th><th>效果</th><th>消耗点数</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>tal_01</td><td>凡骨之心</td><td><span class="qtag q-common">凡</span></td><td>心如止水</td><td>魅力+5</td><td>1</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>tal_02</td><td>灵根慧体</td><td><span class="qtag q-rare">稀有</span></td><td>天生灵根</td><td>根骨+8 精怪+5</td><td>2</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>tal_03</td><td>天生剑骨</td><td><span class="qtag q-epic">史诗</span></td><td>剑道天赋</td><td>战斗根骨+10</td><td>3</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>tal_04</td><td>天命之子</td><td><span class="qtag q-legend">传说</span></td><td>气运加身</td><td>气运+20</td><td>5</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>tal_05</td><td>青云直上</td><td><span class="qtag q-rare">稀有</span></td><td>突破加成</td><td>突破寿元+10</td><td>2</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>tal_06</td><td>逆天改命</td><td><span class="qtag q-epic">史诗</span></td><td>重投一次</td><td>每世可重投1次</td><td>3</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>天赋品质配置（名称与颜色由后台配置）</span></div>
+  <table class="admin-table">
+    <thead><tr><th>品质ID</th><th>品质名称</th><th>显示颜色</th><th>所需天赋点</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>q_01</td><td>凡</td><td><span class="qtag q-common">#B5B0A5</span></td><td>1</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>q_02</td><td>稀有</td><td><span class="qtag q-rare">#6B8FBE</span></td><td>2</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>q_03</td><td>史诗</td><td><span class="qtag q-epic">#9B6BBE</span></td><td>3</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>q_04</td><td>传说</td><td><span class="qtag q-legend">#A27B45</span></td><td>5</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>开局配置</span></div>
+  <div class="card">
+    <div class="grid-3">
+      <div class="form-row"><div class="form-label" style="width:90px;">初始寿元</div><input class="form-input" value="100"></div>
+      <div class="form-row"><div class="form-label" style="width:90px;">初始灵石</div><input class="form-input" value="100"></div>
+      <div class="form-row"><div class="form-label" style="width:90px;">初始等级</div><input class="form-input" value="1"></div>
+      <div class="form-row"><div class="form-label" style="width:90px;">初始天赋点</div><input class="form-input" value="5"></div>
+      <div class="form-row"><div class="form-label" style="width:90px;">初始可选数</div><input class="form-input" value="3"></div>
+    </div>
+    <div class="text-sm text-grey mb-12">初始基础属性</div>
+    <div class="grid-5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
+      <input class="form-input" placeholder="根骨" value="30">
+      <input class="form-input" placeholder="精怪" value="30">
+      <input class="form-input" placeholder="魅力" value="30">
+    </div>
+  </div>
+</div>
+</body>
+</html>

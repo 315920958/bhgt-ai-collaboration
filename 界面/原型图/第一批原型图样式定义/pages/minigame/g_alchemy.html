@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>丹药炼制 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>丹药炼制</h2><div class="sub">节点 N030 · 小游戏 · 组合类</div></div></div>
+
+  <div class="game-stage">
+    <div style="font-family:var(--font-title);font-size:20px;margin-bottom:16px;">选择灵材投入丹炉，炼制丹药</div>
+    <!-- 丹炉 SVG -->
+    <svg width="200" height="160" viewBox="0 0 200 160" style="margin-bottom:20px;">
+      <ellipse cx="100" cy="140" rx="70" ry="12" fill="#8A867D" opacity="0.2"/>
+      <path d="M50,140 L40,80 Q40,50 100,50 Q160,50 160,80 L150,140 Z" fill="#8A6537" stroke="#5A4A2A" stroke-width="1.5"/>
+      <ellipse cx="100" cy="55" rx="60" ry="12" fill="#1C1B18"/>
+      <ellipse cx="100" cy="52" rx="55" ry="9" fill="#A27B45" opacity="0.5"/>
+      <path d="M85,30 Q90,10 100,15 Q110,10 115,30 Q110,40 100,38 Q90,40 85,30Z" fill="#789B95" opacity="0.4"/>
+      <path d="M70,25 Q75,5 85,12" fill="none" stroke="#789B95" stroke-width="1.5" opacity="0.4"/>
+      <path d="M115,12 Q125,5 130,25" fill="none" stroke="#789B95" stroke-width="1.5" opacity="0.4"/>
+      <circle cx="100" cy="100" r="6" fill="#A27B45" opacity="0.6"/>
+      <circle cx="80" cy="110" r="4" fill="#A27B45" opacity="0.5"/>
+      <circle cx="120" cy="115" r="5" fill="#A27B45" opacity="0.5"/>
+    </svg>
+    <div class="text-sm text-grey mb-12">已投入：灵草 · 朱果 · 龙涎（3/5）</div>
+    <div class="flex gap-8">
+      <div class="icon-badge" style="width:40px;height:40px;font-size:14px;">草</div>
+      <div class="icon-badge" style="width:40px;height:40px;font-size:14px;border-color:var(--val-down);color:var(--val-down);">朱</div>
+      <div class="icon-badge" style="width:40px;height:40px;font-size:14px;border-color:var(--bronze-dark);">龙</div>
+      <div class="icon-badge" style="width:40px;height:40px;font-size:14px;opacity:.4;">?</div>
+      <div class="icon-badge" style="width:40px;height:40px;font-size:14px;opacity:.4;">?</div>
+    </div>
+    <div class="flex gap-12 mt-20">
+      <button class="btn btn-primary">开炉炼制</button>
+      <button class="btn btn-secondary">清空重投</button>
+    </div>
+  </div>
+
+  <div class="divider"><span>可选灵材</span></div>
+  <div class="grid-6">
+    <div class="card text-center" style="padding:10px;"><div class="font-title" style="font-size:18px;color:var(--celadon-dark);">灵草</div><div class="text-xs text-grey mt-8">基础</div></div>
+    <div class="card text-center" style="padding:10px;"><div class="font-title" style="font-size:18px;color:var(--val-down);">朱果</div><div class="text-xs text-grey mt-8">火属</div></div>
+    <div class="card text-center" style="padding:10px;"><div class="font-title" style="font-size:18px;color:var(--bronze-dark);">龙涎</div><div class="text-xs text-grey mt-8">稀有</div></div>
+    <div class="card text-center" style="padding:10px;border-color:var(--q-epic);"><div class="font-title" style="font-size:18px;color:var(--q-epic);">玄冰</div><div class="text-xs text-grey mt-8">水属</div></div>
+    <div class="card text-center" style="padding:10px;border-color:var(--q-rare);"><div class="font-title" style="font-size:18px;color:var(--q-rare);">灵芝</div><div class="text-xs text-grey mt-8">药引</div></div>
+    <div class="card text-center" style="padding:10px;border-color:var(--bronze-dark);"><div class="font-title" style="font-size:18px;color:var(--bronze-dark);">凤血</div><div class="text-xs text-grey mt-8">传说</div></div>
+  </div>
+
+  <div class="divider"><span>结果档位</span></div>
+  <div class="grid-3">
+    <div class="card text-center" style="border-color:var(--bronze-dark);"><div class="font-title" style="font-size:18px;color:var(--bronze-dark);">仙丹</div><div class="text-xs text-grey mt-8">全属性+3 评分+20</div></div>
+    <div class="card text-center" style="border-color:var(--q-epic);"><div class="font-title" style="font-size:18px;color:var(--q-epic);">灵丹</div><div class="text-xs text-grey mt-8">指定属性+5 评分+10</div></div>
+    <div class="card text-center"><div class="font-title text-bronze" style="font-size:18px;">凡丹</div><div class="text-xs text-grey mt-8">寿元+5</div></div>
+    <div class="card text-center" style="border-color:var(--val-down);"><div class="font-title val-down" style="font-size:18px;">废丹</div><div class="text-xs text-grey mt-8">寿元-3</div></div>
+    <div class="card text-center" style="border-color:var(--val-down);"><div class="font-title val-down" style="font-size:18px;">炸炉</div><div class="text-xs text-grey mt-8">寿元-13</div></div>
+  </div>
+  <div class="hint-box mt-16">
+    <span style="color:var(--val-down);">提示：</span>不同灵材组合产生不同结果，搭配不当可能炸炉。可观看广告减少惩罚。
+  </div>
+</div>
+</body>
+</html>

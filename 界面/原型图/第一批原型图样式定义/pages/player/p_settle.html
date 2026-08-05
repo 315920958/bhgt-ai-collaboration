@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本世结算 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>本世结算</h2><div class="sub">第 3 世 · 结束</div></div></div>
+
+  <div class="settle-grade">
+    <div class="grade-name">仙缘深厚</div>
+    <div class="grade-score">本世评分 85 · 奖励天赋点 +3</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="text-sm text-grey mb-12">本世评分明细</div>
+      <div class="attr-row"><span class="attr-name">战斗评分累计</span><span class="val-up font-title" style="font-size:16px;">+62</span></div>
+      <div class="attr-row"><span class="attr-name">小游戏评分</span><span class="val-up font-title" style="font-size:16px;">+28</span></div>
+      <div class="attr-row"><span class="attr-name">事件扣分</span><span class="val-down font-title" style="font-size:16px;">-5</span></div>
+      <div class="attr-row"><span class="attr-name">最终评分</span><span class="font-title text-bronze" style="font-size:20px;">85</span></div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">局外成长</div>
+      <div class="attr-row"><span class="attr-name">累计通关次数</span><span class="font-title" style="font-size:16px;">3</span></div>
+      <div class="attr-row"><span class="attr-name">可选天赋上限</span><span class="font-title text-bronze" style="font-size:16px;">5</span></div>
+      <div class="attr-row"><span class="attr-name">天赋点余额</span><span class="font-title text-bronze" style="font-size:16px;">8</span></div>
+      <div class="attr-row"><span class="attr-name">永久遗物</span><span class="font-title" style="font-size:16px;">2 件</span></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>遗物保留 · 本世新获中选一件永久保留</span></div>
+  <div class="grid-3">
+    <div class="card card-quality q-rare qborder" style="cursor:pointer;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-rare);color:var(--q-rare);">稀</div>
+      <div class="card-img">剑</div>
+      <div class="flex justify-between items-center"><div class="card-title">青铜古剑</div><span class="qtag q-rare">稀有</span></div>
+      <div class="card-desc mt-8">根骨+5</div>
+      <div class="text-center mt-12"><span class="qtag" style="color:var(--bronze-dark);border-color:var(--bronze-dark);">选中保留</span></div>
+    </div>
+    <div class="card card-quality q-common qborder" style="cursor:pointer;opacity:.7;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;">凡</div>
+      <div class="card-img">凡</div>
+      <div class="flex justify-between items-center"><div class="card-title">护身符</div><span class="qtag q-common">凡</span></div>
+      <div class="card-desc mt-8">根骨+3</div>
+      <div class="text-center mt-12"><span class="text-sm text-grey">点击选择</span></div>
+    </div>
+    <div class="card card-quality q-epic qborder" style="cursor:pointer;opacity:.7;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-epic);color:var(--q-epic);">史</div>
+      <div class="card-img">玉</div>
+      <div class="flex justify-between items-center"><div class="card-title">聚灵玉佩</div><span class="qtag q-epic">史诗</span></div>
+      <div class="card-desc mt-8">精怪+8 气运+3</div>
+      <div class="text-center mt-12"><span class="text-sm text-grey">点击选择</span></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>已永久保留遗物（不会丢失）</span></div>
+  <div class="grid-2">
+    <div class="item-row"><div class="item-icon">灵</div><div class="item-info"><div class="iname">灵根玉 · 第1世保留</div><div class="idesc">精怪+5</div></div><span class="qtag" style="color:var(--bronze-dark);border-color:var(--bronze-dark);">永久</span></div>
+    <div class="item-row"><div class="item-icon">凡</div><div class="item-info"><div class="iname">凡心珠 · 第2世保留</div><div class="idesc">魅力+3</div></div><span class="qtag" style="color:var(--bronze-dark);border-color:var(--bronze-dark);">永久</span></div>
+  </div>
+
+  <div class="flex gap-12 mt-20 justify-center">
+    <button class="btn btn-seal" style="padding:14px 40px;font-size:18px;">重生 · 入下一世</button>
+  </div>
+  <div class="text-center text-sm text-grey mt-12">重生后返回人生起始节点，不可跳过前期阶段</div>
+</div>
+</body>
+</html>

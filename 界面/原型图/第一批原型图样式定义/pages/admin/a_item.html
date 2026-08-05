@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物品管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>物品管理</h2><div class="sub">遗物 / 消耗品 / 剧情道具</div></div><button class="btn btn-primary btn-sm">+ 新增物品</button></div>
+  <div class="tabs"><div class="tab active">遗物 (4)</div><div class="tab">消耗品 (3)</div><div class="tab">剧情道具 (2)</div></div>
+  <table class="admin-table">
+    <thead><tr><th>ID</th><th>名称</th><th>品质</th><th>属性加成</th><th>允许购买</th><th>节点奖励</th><th>永久保留</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>rel_01</td><td>凡骨之心</td><td><span class="qtag q-common">凡</span></td><td>魅力+5</td><td>是</td><td>是</td><td>否</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>rel_02</td><td>青铜古剑</td><td><span class="qtag q-rare">稀有</span></td><td>根骨+5</td><td>是</td><td>是</td><td>是</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>rel_03</td><td>聚灵玉佩</td><td><span class="qtag q-epic">史诗</span></td><td>精怪+8 气运+3</td><td>是</td><td>是</td><td>是</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>rel_04</td><td>混元神鼎</td><td><span class="qtag q-legend">传说</span></td><td>全属性+5</td><td>否</td><td>是</td><td>是</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>消耗品（只能购买，不能节点奖励；使用后消失，重生清空）</span></div>
+  <table class="admin-table">
+    <thead><tr><th>ID</th><th>名称</th><th>属性变化</th><th>临时持续</th><th>每次消耗</th><th>最大持有</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>con_01</td><td>回春丹</td><td>寿元+10</td><td>—</td><td>1</td><td>5</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>con_02</td><td>灵露</td><td>根骨+3</td><td>3节点</td><td>1</td><td>3</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>con_03</td><td>根骨符</td><td>根骨+5</td><td>战斗前</td><td>1</td><td>2</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>剧情道具（使用条件/消耗/结果在按钮配置）</span></div>
+  <table class="admin-table">
+    <thead><tr><th>ID</th><th>名称</th><th>说明</th><th>允许购买</th><th>节点奖励</th><th>最大持有</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>plot_01</td><td>引荐函</td><td>青云宗入门凭证</td><td>是</td><td>是</td><td>1</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>plot_02</td><td>密信</td><td>神秘人托付</td><td>否</td><td>是</td><td>1</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

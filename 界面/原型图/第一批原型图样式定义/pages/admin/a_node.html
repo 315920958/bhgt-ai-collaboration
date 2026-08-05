@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>节点管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>节点管理</h2><div class="sub">剧情节点 + 按钮 + 战斗 + 小游戏</div></div><button class="btn btn-primary btn-sm">+ 新增节点</button></div>
+  <div class="flex gap-12 mb-16 items-center">
+    <input class="form-input" style="max-width:200px;" placeholder="搜索节点名称">
+    <select class="form-select"><option>全部大阶段</option><option>初入仙门</option><option>筑基之劫</option></select>
+    <select class="form-select"><option>全部类型</option><option>普通节点</option><option>战斗节点</option></select>
+    <button class="btn btn-secondary btn-sm">搜索</button>
+  </div>
+  <table class="admin-table">
+    <thead><tr><th>节点ID</th><th>名称</th><th>大阶段</th><th>剧情标题</th><th>战斗</th><th>按钮数</th><th>开商店</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>N001</td><td>青云山门</td><td>初入仙门</td><td>初入仙门</td><td>否</td><td>3</td><td>否</td><td><button class="btn-text btn">详情</button> <button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>N002</td><td>拜师学艺</td><td>初入仙门</td><td>择师</td><td>否</td><td>3</td><td>否</td><td><button class="btn-text btn">详情</button> <button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>N012</td><td>妖兽巢穴</td><td>初入仙门</td><td>妖兽之患</td><td><span class="qtag" style="color:var(--val-down);border-color:var(--val-down);">是</span></td><td>3</td><td>是</td><td><button class="btn-text btn">详情</button> <button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>N015</td><td>灵泉秘境</td><td>初入仙门</td><td>灵泉奇遇</td><td>否</td><td>2</td><td>否</td><td><button class="btn-text btn">详情</button> <button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>N022</td><td>问道老人</td><td>初入仙门</td><td>道心之问</td><td>否</td><td>3</td><td>否</td><td><button class="btn-text btn">详情</button> <button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>N030</td><td>丹房炼药</td><td>初入仙门</td><td>丹药初成</td><td>否</td><td>2</td><td>是</td><td><button class="btn-text btn">详情</button> <button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+
+  <div class="divider"><span>节点详情 · N012 妖兽巢穴（含战斗配置）</span></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="text-sm text-grey mb-12">基础配置</div>
+      <div class="form-row"><div class="form-label">节点名称</div><input class="form-input" value="妖兽巢穴"></div>
+      <div class="form-row"><div class="form-label">所属大阶段</div><select class="form-select"><option>初入仙门</option></select></div>
+      <div class="form-row"><div class="form-label">剧情标题</div><input class="form-input" value="妖兽之患"></div>
+      <div class="form-row"><div class="form-label">剧情正文</div><textarea class="form-input" style="height:60px;">密林深处传来低沉咆哮，一头妖兽挡住了去路……</textarea></div>
+      <div class="form-row"><div class="form-label">剧情图片</div><input class="form-input" placeholder="可选"></div>
+      <div class="form-row"><div class="form-label">是否战斗节点</div><select class="form-select"><option selected>是</option><option>否</option></select></div>
+      <div class="form-row"><div class="form-label">显示按钮数</div><input class="form-input" style="max-width:80px;" value="3"></div>
+      <div class="form-row"><div class="form-label">通关开商店</div><select class="form-select"><option selected>是</option><option>否</option></select></div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">战斗配置</div>
+      <div class="form-row"><div class="form-label">判定属性</div><div class="flex gap-8"><span class="tag">根骨 ✓</span><span class="tag">精怪 ✓</span></div></div>
+      <div class="form-row"><div class="form-label">属性门槛</div><div class="flex gap-12"><span class="text-sm">根骨≥30</span><span class="text-sm">精怪≥35</span></div></div>
+      <div class="form-row"><div class="form-label">使用气运补差</div><select class="form-select"><option selected>是</option><option>否</option></select></div>
+      <div class="form-row"><div class="form-label">使用投掷次数</div><select class="form-select"><option selected>是</option><option>否</option></select></div>
+      <div class="divider"><span>成功</span></div>
+      <div class="form-row"><div class="form-label">成功文案</div><textarea class="form-input" style="height:40px;">你以深厚根骨突破重围</textarea></div>
+      <div class="form-row"><div class="form-label">成功效果</div><input class="form-input" value="根骨+2, 寿元-3, 灵石+50, 评分+15"></div>
+      <div class="form-row"><div class="form-label">成功下一节点</div><input class="form-input" value="N013"></div>
+      <div class="divider"><span>失败</span></div>
+      <div class="form-row"><div class="form-label">失败文案</div><textarea class="form-input" style="height:40px;">你不敌妖兽，身受重伤</textarea></div>
+      <div class="form-row"><div class="form-label">额外寿元扣除</div><input class="form-input" style="max-width:100px;" placeholder="比例%" value="10"></div>
+      <div class="form-row"><div class="form-label">允许广告</div><select class="form-select"><option selected>是</option><option>否</option></select></div>
+      <div class="form-row"><div class="form-label">广告后效果</div><input class="form-input" value="复活, 获得成功奖励"></div>
+    </div>
+  </div>
+  <div class="divider"><span>该节点按钮列表</span></div>
+  <table class="admin-table">
+    <thead><tr><th>按钮ID</th><th>文字</th><th>类型</th><th>必现</th><th>消耗</th><th>下一节点</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>btn_01</td><td>正面迎敌</td><td>普通</td><td>是</td><td>—</td><td>N013</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>btn_02</td><td>绕道而行</td><td>普通</td><td>否</td><td>寿元-5</td><td>N014</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>btn_03</td><td>使用灵符</td><td>普通</td><td>否</td><td>消耗品×1</td><td>N013</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

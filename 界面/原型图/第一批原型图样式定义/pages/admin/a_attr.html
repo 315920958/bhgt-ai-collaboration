@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>属性管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>属性管理</h2><div class="sub">基础属性 + 特殊属性 · 同一张配置表</div></div><button class="btn btn-primary btn-sm">+ 新增属性</button></div>
+  <div class="tabs"><div class="tab active">全部</div><div class="tab">基础属性</div><div class="tab">特殊属性</div></div>
+  <table class="admin-table">
+    <thead><tr><th>属性ID</th><th>类型</th><th>名称</th><th>说明</th><th>最小值</th><th>最大值</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>attr_01</td><td><span class="tag">基础</span></td><td>根骨</td><td>战斗判定核心属性</td><td>0</td><td>999</td><td><button class="btn-text btn">编辑</button> <button class="btn-text btn">删除</button></td></tr>
+      <tr><td>attr_02</td><td><span class="tag">基础</span></td><td>精怪</td><td>灵力相关属性</td><td>0</td><td>999</td><td><button class="btn-text btn">编辑</button> <button class="btn-text btn">删除</button></td></tr>
+      <tr><td>attr_03</td><td><span class="tag">基础</span></td><td>魅力</td><td>交际相关属性</td><td>0</td><td>999</td><td><button class="btn-text btn">编辑</button> <button class="btn-text btn">删除</button></td></tr>
+      <tr><td>attr_s1</td><td><span class="tag" style="color:var(--val-down);border-color:var(--val-down);">特殊</span></td><td>气运</td><td>决定随机补差区间</td><td>0</td><td>100</td><td><button class="btn-text btn">编辑</button> <button class="btn-text btn">删除</button></td></tr>
+      <tr><td>attr_s2</td><td><span class="tag" style="color:var(--val-down);border-color:var(--val-down);">特殊</span></td><td>投掷次数</td><td>战斗投掷次数，默认1</td><td>0</td><td>10</td><td><button class="btn-text btn">编辑</button> <button class="btn-text btn">删除</button></td></tr>
+      <tr><td>attr_s3</td><td><span class="tag" style="color:var(--val-down);border-color:var(--val-down);">特殊</span></td><td style="color:var(--grey);">待定</td><td>第三特殊属性用途待定</td><td>—</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>attr_s4</td><td><span class="tag" style="color:var(--val-down);border-color:var(--val-down);">特殊</span></td><td style="color:var(--grey);">悟性</td><td>用途待定</td><td>—</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>新增 / 编辑表单</span></div>
+  <div class="card">
+    <div class="form-row"><div class="form-label">属性ID</div><input class="form-input" placeholder="attr_06"><span class="form-hint">唯一标识</span></div>
+    <div class="form-row"><div class="form-label">属性类型</div><select class="form-select"><option>基础属性</option><option>特殊属性</option></select></div>
+    <div class="form-row"><div class="form-label">属性名称</div><input class="form-input" placeholder="玩家看到的名称"></div>
+    <div class="form-row"><div class="form-label">属性说明</div><input class="form-input" placeholder="属性介绍文案"></div>
+    <div class="form-row"><div class="form-label">最小值</div><input class="form-input" style="max-width:120px;" type="number" value="0"></div>
+    <div class="form-row"><div class="form-label">最大值</div><input class="form-input" style="max-width:120px;" type="number" value="999"></div>
+    <div class="form-row"><div class="form-label"></div><button class="btn btn-primary btn-sm">保存</button> <button class="btn btn-secondary btn-sm">取消</button></div>
+  </div>
+</div>
+</body>
+</html>

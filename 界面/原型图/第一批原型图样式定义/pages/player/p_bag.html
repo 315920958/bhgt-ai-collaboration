@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>背包 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>储物袋</h2><div class="sub">当前持有物品</div></div></div>
+
+  <div class="tabs">
+    <div class="tab active">遗物 (2)</div>
+    <div class="tab">消耗品 (3)</div>
+    <div class="tab">剧情道具 (1)</div>
+  </div>
+
+  <div class="text-sm text-grey mb-12">遗物 · 获得后自动生效，不可出售</div>
+  <div class="grid-2">
+    <div class="item-row">
+      <div class="item-icon">凡</div>
+      <div class="item-info"><div class="iname">凡骨之心 <span class="qtag q-common">凡</span></div><div class="idesc">魅力+5（已生效）</div></div>
+      <span class="tag">生效中</span>
+    </div>
+    <div class="item-row">
+      <div class="item-icon">剑</div>
+      <div class="item-info"><div class="iname">青铜古剑 <span class="qtag q-rare">稀有</span></div><div class="idesc">根骨+5（已生效）</div></div>
+      <span class="tag">生效中</span>
+    </div>
+  </div>
+
+  <div class="divider"><span>消耗品 · 使用后消失，重生清空</span></div>
+  <div class="grid-2">
+    <div class="item-row">
+      <div class="item-icon">丹</div>
+      <div class="item-info"><div class="iname">回春丹 ×2</div><div class="idesc">寿元+10 · 每次消耗1</div></div>
+      <button class="btn btn-sm btn-primary">使用</button>
+    </div>
+    <div class="item-row">
+      <div class="item-icon">露</div>
+      <div class="item-info"><div class="iname">灵露 ×1</div><div class="idesc">根骨+3（持续3节点）</div></div>
+      <button class="btn btn-sm btn-primary">使用</button>
+    </div>
+    <div class="item-row">
+      <div class="item-icon">符</div>
+      <div class="item-info"><div class="iname">根骨符 ×1</div><div class="idesc">根骨+5 · 使用条件：战斗前</div></div>
+      <button class="btn btn-sm btn-ghost" style="color:var(--grey);">不可用</button>
+    </div>
+  </div>
+
+  <div class="divider"><span>剧情道具 · 按钮触发时消耗</span></div>
+  <div class="grid-2">
+    <div class="item-row">
+      <div class="item-icon">函</div>
+      <div class="item-info"><div class="iname">引荐函 ×1</div><div class="idesc">青云宗入门凭证</div></div>
+      <span class="text-sm text-grey">持有</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

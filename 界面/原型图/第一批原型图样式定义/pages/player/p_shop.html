@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商店 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header">
+    <div><h2>坊市商铺</h2><div class="sub">节点通关后开启</div></div>
+    <div class="jade-card jade-small"><span class="label">灵石</span><span class="val">120</span></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">遗物</div>
+    <div class="tab">消耗品</div>
+    <div class="tab">剧情道具</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="item-row">
+      <div class="item-icon">剑</div>
+      <div class="item-info"><div class="iname">青铜古剑 <span class="qtag q-rare">稀有</span></div><div class="idesc">根骨+5 · 战斗判定加成</div></div>
+      <div class="text-center"><div class="item-price">80</div><button class="btn btn-sm btn-primary mt-8">购买</button></div>
+    </div>
+    <div class="item-row">
+      <div class="item-icon">玉</div>
+      <div class="item-info"><div class="iname">聚灵玉佩 <span class="qtag q-epic">史诗</span></div><div class="idesc">精怪+8 · 气运+3</div></div>
+      <div class="text-center"><div class="item-price">150</div><button class="btn btn-sm btn-ghost mt-8" style="color:var(--val-down);border-color:var(--val-down);">灵石不足</button></div>
+    </div>
+    <div class="item-row">
+      <div class="item-icon">符</div>
+      <div class="item-info"><div class="iname">护身符 <span class="qtag q-common">凡</span></div><div class="idesc">根骨+3</div></div>
+      <div class="text-center"><div class="item-price">30</div><button class="btn btn-sm btn-primary mt-8">购买</button></div>
+    </div>
+    <div class="item-row">
+      <div class="item-icon">鼎</div>
+      <div class="item-info"><div class="iname">混元神鼎 <span class="qtag q-legend">传说</span></div><div class="idesc">全属性+5</div></div>
+      <div class="text-center"><div class="item-price">500</div><button class="btn btn-sm btn-ghost mt-8" style="color:var(--val-down);border-color:var(--val-down);">灵石不足</button></div>
+    </div>
+  </div>
+
+  <div class="hint-box mt-16">
+    <span style="color:var(--val-down);">提示：</span>已拥有的唯一遗物不可重复购买。每世购买上限以商品配置为准。
+  </div>
+
+  <div class="flex gap-12 mt-20">
+    <button class="btn btn-secondary">返回剧情</button>
+  </div>
+</div>
+</body>
+</html>

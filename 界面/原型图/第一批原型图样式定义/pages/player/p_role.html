@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>角色详情 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>角色详情</h2><div class="sub">当前修行状态</div></div></div>
+
+  <div class="grid-2">
+    <!-- 左：玉牌+境界 -->
+    <div>
+      <div class="jade-card jade-large">
+        <div class="jade-avatar">李</div>
+        <div class="jade-info"><div class="name">李长生</div><div class="meta">18岁 · 炼气三层 · 男</div><div class="meta" style="margin-top:4px;">第一卷 · 初入仙门</div></div>
+      </div>
+      <div class="card mt-16">
+        <div class="text-sm text-grey mb-12">境界进度</div>
+        <div class="bar-label"><span>炼气三层</span><span>1200/3000</span></div>
+        <div class="bar"><div class="bar-fill bar-xiujing" style="width:40%"></div></div>
+        <div class="bar-label mt-12"><span>寿元</span><span>85 / 100</span></div>
+        <div class="bar"><div class="bar-fill bar-shouyuan" style="width:85%"></div></div>
+        <div class="flex justify-between mt-12">
+          <span class="text-sm text-grey">灵石</span><span class="font-title text-bronze" style="font-size:18px;">120</span>
+        </div>
+      </div>
+    </div>
+    <!-- 右：属性 -->
+    <div>
+      <div class="card">
+        <div class="text-sm text-grey mb-8">基础属性</div>
+        <div class="attr-row"><span class="attr-name">根骨</span><span class="attr-val">35 <span class="val-up text-sm">+8</span></span></div>
+        <div class="attr-row"><span class="attr-name">精怪</span><span class="attr-val">42</span></div>
+        <div class="attr-row"><span class="attr-name">魅力</span><span class="attr-val">38 <span class="val-up text-sm">+5</span></span></div>
+      </div>
+      <div class="card mt-16">
+        <div class="text-sm text-grey mb-8">特殊属性</div>
+        <div class="attr-row"><span class="attr-name">气运</span><span class="attr-val">50</span></div>
+        <div class="attr-row"><span class="attr-name">投掷次数</span><span class="attr-val">1</span></div>
+        <div class="attr-row"><span class="attr-name text-grey">第三属性（待定）</span><span class="attr-val text-grey">—</span></div>
+        <div class="attr-row"><span class="attr-name text-grey">悟性（待定）</span><span class="attr-val text-grey">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span>临时状态 · 重生清空</span></div>
+  <div class="grid-3">
+    <div class="temp-status"><span class="text-grey">根骨</span><span class="temp-val">+5</span><span class="text-xs text-grey">剩余 3 节点</span></div>
+    <div class="temp-status"><span class="text-grey">精怪</span><span class="temp-val">+3</span><span class="text-xs text-grey">剩余 1 节点</span></div>
+    <div class="temp-status"><span class="text-grey">无</span></div>
+  </div>
+
+  <div class="divider"><span>已生效天赋</span></div>
+  <div class="grid-2">
+    <div class="item-row"><div class="item-icon">凡</div><div class="item-info"><div class="iname">凡骨之心</div><div class="idesc">魅力+5</div></div></div>
+    <div class="item-row"><div class="item-icon">灵</div><div class="item-info"><div class="iname">灵根慧体</div><div class="idesc">根骨+8 精怪+5</div></div></div>
+  </div>
+</div>
+</body>
+</html>
