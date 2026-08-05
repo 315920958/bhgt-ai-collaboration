@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>战斗评分 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>战斗评分管理</h2><div class="sub">全局乘数 + 评分档位</div></div></div>
+  <div class="card mb-20">
+    <div class="text-sm text-grey mb-12">全局配置</div>
+    <div class="form-row"><div class="form-label">评分乘数</div><input class="form-input" style="max-width:120px;" value="1.0"><span class="form-hint">战斗档位分值统一乘以该数值</span></div>
+  </div>
+  <div class="divider"><span>评分档位（可配置任意数量）</span></div>
+  <table class="admin-table">
+    <thead><tr><th>档位ID</th><th>档位名称</th><th>超额属性下限</th><th>超额属性上限</th><th>档位分值</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>bs_01</td><td>险胜</td><td>0</td><td>5</td><td>5</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>bs_02</td><td>游刃有余</td><td>6</td><td>15</td><td>10</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>bs_03</td><td>轻松取胜</td><td>16</td><td>30</td><td>15</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>bs_04</td><td>碾压</td><td>31</td><td>999</td><td>25</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="hint-box mt-16">
+    计算规则：各项判定属性超过门槛的数值相加 → 匹配档位 → 档位分值 × 全局乘数 = 本次战斗评分。使用气运补差通过时，以补差后最终数值计算。
+  </div>
+
+  <div class="divider"><span>气运补差分档（可配置任意数量）</span></div>
+  <div class="text-xs text-grey mb-12">气运值达到某档，战斗判定不足门槛时用「补差」补足未达门槛的属性；补差上限为该档「最高加到」值。可添加任意档，从低到高取第一个满足「气运值 ≥」的档。</div>
+  <table class="admin-table">
+    <thead><tr><th>档</th><th>气运值 ≥</th><th>最高补差 +</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><input class="form-input" style="max-width:90px;" value="0"></td><td><input class="form-input" style="max-width:90px;" value="5"></td><td><button class="btn-text btn">删除</button></td></tr>
+      <tr><td>2</td><td><input class="form-input" style="max-width:90px;" value="40"></td><td><input class="form-input" style="max-width:90px;" value="15"></td><td><button class="btn-text btn">删除</button></td></tr>
+      <tr><td>3</td><td><input class="form-input" style="max-width:90px;" value="70"></td><td><input class="form-input" style="max-width:90px;" value="30"></td><td><button class="btn-text btn">删除</button></td></tr>
+    </tbody>
+  </table>
+  <button class="btn btn-seal mt-12">+ 新增一档</button>
+  <div class="form-row mt-12"><div class="form-label">补差取整方式</div>
+    <select class="form-input" style="max-width:170px;">
+      <option>向下取整（舍弃小数）</option>
+      <option>四舍五入</option>
+      <option>向上取整</option>
+    </select>
+    <span class="form-hint">补差计算值按此方式取整后生效</span>
+  </div>
+  <div class="hint-box mt-16">
+    匹配规则：取「气运值 ≥」条件满足的最小一档，补差上限取该档「最高补差 +」。属性不足门槛时按此上限随机/均分补足，不足部分再走投掷次数重试。
+  </div>
+</div>
+</body>
+</html>
