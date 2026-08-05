@@ -8,6 +8,15 @@
 > - 原型与样式：`../项目文档/原型图与样式定义说明.md`
 > - 仓库：`bhgt-server`（NestJS 服务端）/ `bhgt-admin`（Vue 后台）/ `bhgt-h5-client`（React 玩家端）
 
+**阶段状态图例**：✅ 已完成 ｜ 🔧 正在开发中 ｜ ⬜ 未开始（待排期）
+
+**当前进度（2026-08-05 起）**：
+- bhgt-server：**S0 🔧**、**S1 🔧**
+- bhgt-admin：**A0 🔧**、**A1 🔧**
+- bhgt-h5-client：**H0 🔧**、**H1 🔧**
+
+> 注：本对话只负责文档整理；S0/S1、A0/A1、H0/H1 的实际编码在用户另开的 3 个代码对话中进行，本文档仅同步标注状态。
+
 ---
 
 ## 0. 三项目总览与依赖方向
@@ -56,11 +65,11 @@
 
 > 已有基础：基础设施层（CORS/Auth/响应格式化/异常/MESSAGE_BODY）、AES-GCM 认证、三表 schema（sys.users/tt.users/game.users）、dev-login/admin-login/taptap-login 骨架、Mongoose 连接。
 
-### S0 基础设施补齐（轻量）
+### S0 基础设施补齐（轻量）🔧 正在开发中
 - 错误码表（`error-code.md` 已定义）接入各异常；
 - 配置项（`@nestjs/config` 多 env）齐全：DB_NAME、AUTH_AES_KEY、token 过期。
 
-### S1 基础数据模型 + 配置 CRUD（无依赖，做扎实）
+### S1 基础数据模型 + 配置 CRUD（无依赖，做扎实）🔧 正在开发中
 - Mongoose schema：**属性**（基础+特殊）、**物品**（遗物/消耗品/剧情道具三类）、**天赋**（品质/开局配置/评分档位/可选上限）。
 - 对应模块的 CRUD 接口 + DTO（供 admin 调用）：`/admin/attributes`、`/admin/items`、`/admin/talents`。
 - 默认值：第三特殊属性、悟性先留「待定」字段。
@@ -94,10 +103,10 @@
 
 > 已有基础：Vue3 + 路由 + MainLayout（左侧菜单壳）+ 请求层（axios 拦截器拆 MESSAGE_BODY）+ Element Plus。
 
-### A0 框架填充
+### A0 框架填充 🔧 正在开发中
 - 左侧菜单接齐：属性/物品/天赋/按钮/节点/商品/CG/境界/游戏信息（对应 server 各配置模块）；路由守卫已有。
 
-### A1 基础数据配置页（依赖 server S1）
+### A1 基础数据配置页（依赖 server S1）🔧 正在开发中
 - 属性配置页、物品配置页（三类 Tab）、天赋配置页（多 Tab：列表/品质/开局/评分档位/可选上限）。
 
 ### A2 节点流配置页（依赖 server S2）
@@ -118,10 +127,10 @@
 
 > 已有基础：React + HashRouter + MobileLayout（底部 TabBar 壳）+ 请求层 + antd-mobile + dev 万能登录/TapTap 骨架。
 
-### H0 框架（已有壳，接路由）
+### H0 框架（已有壳，接路由）🔧 正在开发中
 - 首页 / 剧情 / 角色 / 背包 / 商店 / 战斗结算 / 本世结算 / 天赋 / CG 九个页面路由 + TabBar。
 
-### H1 创建角色 + 角色页（依赖 server S4）
+### H1 创建角色 + 角色页（依赖 server S4）🔧 正在开发中
 - 创建角色页（填昵称+选性别，年龄留空）；角色页（玉牌/境界/寿元血格/灵石/属性/临时状态数组/已生效天赋；进度条先占位 Q1）。
 
 ### H2 剧情 + 战斗结算主链路（依赖 server S2/S4）——核心
@@ -140,7 +149,7 @@
 
 ## 6. 跨项目建议顺序与关键路径
 
-**总体顺序**：`server S0→S1` →（并行）`admin A0/A1` + `h5 H0/H1` → `server S2` → `h5 H2` → `server S3/S4` → `admin A2/A3/A4` + `h5 H3/H4` → `server S5` + `admin/h5 小游戏`。
+**总体顺序**（标注当前进度）：`server S0🔧→S1🔧` →（并行）`admin A0🔧/A1🔧` + `h5 H0🔧/H1🔧` → `server S2` → `h5 H2` → `server S3/S4` → `admin A2/A3/A4` + `h5 H3/H4` → `server S5` + `admin/h5 小游戏`。
 
 **最短可玩 Demo 关键路径**：`server S1→S2→S4` + `h5 H1→H2→H4`。
 
