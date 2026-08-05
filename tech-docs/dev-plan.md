@@ -8,7 +8,7 @@
 > - 原型与样式：`../项目文档/原型图与样式定义说明.md`
 > - 仓库：`bhgt-server`（NestJS 服务端）/ `bhgt-admin`（Vue 后台）/ `bhgt-h5-client`（React 玩家端）
 
-**阶段状态图例**：✅ 已完成 ｜ 🔧 正在开发中 ｜ ⬜ 未开始（待排期）
+**阶段状态图例**：✅ 已完成 ｜ 🔧 正在开发中 ｜ 🟢 可立即开工（schema 已详细设计 + 有界面图，无需等其它模块） ｜ ⬜ 未开始（待排期）
 
 **当前进度（2026-08-05 起）**：
 - bhgt-server：**S0 🔧**、**S1 🔧**
@@ -16,6 +16,8 @@
 - bhgt-h5-client：**H0 🔧**、**H1 🔧**
 
 > 注：本对话只负责文档整理；S0/S1、A0/A1、H0/H1 的实际编码在用户另开的 3 个代码对话中进行，本文档仅同步标注状态。
+
+**🔄 重新评估（2026-08-05 末）：可立即并行开工项** —— 见 **§8**。标准：**schema 已详细设计（非占位）且对应后台/玩家端有界面原型图**，即可把服务端优先级往前排、与 admin 并行。据此，**境界 / 大阶段 / 节点+按钮 的「数据模型 + CRUD」已可前置（原属 S2/S3）**；其算法逻辑仍按原 sprint。详见 §8。
 
 ---
 
@@ -167,3 +169,42 @@
 > 当前：Q1~Q7、Q9 全部已确认/方向已定（见上方 ✅ 段）；无待朋友确认的阻塞项。Q6 气运补差分档/取整由配置决定（已加「气运补差分档」配置项 mock）；Q7 按钮权重 = 权重加和概率（轮盘赌）。
 
 内部待定项（Q8、Q10~Q14）不打扰朋友，按文档默认值继续，相关阶段临近收尾时再内部拍板。
+
+---
+
+## 8. 重新评估：可立即并行开工清单（schema 详细 + 有界面图）
+
+> 评估标准（用户 2026-08-05 拍板）：**只要数据库 schema 已详细设计（非占位）且对应后台/玩家端有界面原型图，即可把服务端优先级往前排、与 admin 并行开工**。下列三组据此打包评估。
+
+### 8.1 🟢 连着服务端一起做（server 模型+CRUD + admin 配置页，契约成对）
+
+| 模块 | schema 来源（database-schema.md） | 界面图 | server 现在可做 | admin 现在可做 |
+|---|---|---|---|---|
+| 属性 | §5.1 `config.attributes`（S1） | a_attr | Mongoose 模型 + CRUD + DTO | 属性配置页（基础/特殊 Tab） |
+| 物品 | §5.2 `config.items`（S1） | a_item | 模型 + CRUD + DTO（三类 type） | 物品配置页（三类 Tab） |
+| 天赋 + 品质 | §5.3 / §5.4（S1） | a_talent | 模型 + CRUD + DTO | 天赋页（列表/品质 Tab） |
+| 游戏信息 + 评分档位 | §5.5 `config.game`（S1，battleConfig 除外） | a_gameinfo / a_battle（档位部分） | 单例 upsert + 开局/可选上限/评分档位 CRUD | 游戏信息页 + 评分档位配置页 |
+| 境界 | §6.1 `config.realms`（原 S3 📐） | a_realm | **前置**：模型 + CRUD | 境界配置页 |
+| 大阶段/卷 | §6.2 `config.stages`（原 S2 📐） | a_stage | **前置**：模型 + CRUD | 关卡配置页 |
+| 节点 + 按钮 | §6.3 `config.nodes`（原 S2 📐，含 buttons 子文档） | a_node / a_btn | **前置**：模型 + CRUD（节点含 buttons 子文档） | 节点/按钮配置页（壳 + 表单） |
+
+> 说明：境界 / 大阶段 / 节点三项的**数据模型与 CRUD 已可前置**；其**算法逻辑**（境界突破触发、节点按钮筛选 + 权重轮盘赌、战斗判定 + 气运补差）仍按原 sprint（S2/S3）实现，不在本次前置范围。8.1 全表的服务端契约（接口路径/字段）已可在另开对话直接落地。
+
+### 8.2 🟢 仅 admin 可先行（纯前端，不依赖 server 运行时）
+
+- 通用 CRUD 组件封装（Table / Form / Modal / 分页 / 搜索栏，一次封装全页复用）
+- TS DTO / interface（照 `database-schema.md` 各 § 写出，零业务依赖）
+- 8.1 各 admin 配置页的**表单 / 列表壳**（submit 先留 `request()` 桩，server 接口就绪即联调）
+- 玩家列表 / 管理员列表只读表格壳（列定义照 `sys.users`，S0 表结构已知）
+
+### 8.3 ⛔ 阻塞：有界面图但 schema 仍为占位 / 缺失（需先补 schema 设计才能前置）
+
+| 模块 | 界面图 | 现状 | 需补的 schema |
+|---|---|---|---|
+| 战斗 / 评分配置 | a_battle（含气运补差分档） | §7.3 `config.battles` 占位；气运补差分档应入 `config.game.battleConfig`（当前 `{}`） | 设计 `config.game.battleConfig`（气运补差分档字段）+ `config.battles` 评分档位表 |
+| 商品配置 | a_shop | §7.2 `config.shops` 占位 | 设计 `config.shops`（引用 items + 价格 / 上架 / 重复 / 每世上限） |
+| CG 配置 | a_cg | §7.4 `config.cgs` 占位 | 设计 `config.cgs`（缩略 / 原 / 占位图 + 回看文字 + maxStage） |
+| 广告配置 | a_ad | schema **缺失**（无 `config.ads` 表；§6.3 `adId` FK 标「待定」） | **新增** `config.ads` 表（图片 + 引用位置），优先级最高先补 |
+| 小游戏（转盘/答题/炼丹） | 3 张 minigame | §7.1 `config.minigames` 占位（S5） | 设计 `config.minigames`（结果档位 / 配方）— 放最后 |
+
+> 建议：把 8.3 中「战斗/评分」「商品」「CG」「广告」四项的 schema 现在补设计（用户已给界面图与字段，设计成本低），补完后即可转入 8.1 与前一批并行。广告表（config.ads）当前完全缺失，优先级最高先补；否则 `config.nodes.battleConfig.adId` 的 FK 无处可指。
