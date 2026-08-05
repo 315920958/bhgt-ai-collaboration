@@ -82,6 +82,7 @@
 - `config.stages`（大阶段/卷）模型 + 接口（`/admin/stages`）
 - `config.nodes`（含 buttons 子文档）模型 + 接口（`/nodes`、`/admin/nodes`）；按钮随节点子文档管理
 - Mongoose schema 严格照 `database-schema.md` §6.2 / §6.3
+- **📝 数据已预置（2026-08-05）**：`config.stages` 已直接通过 mongosh 写入开发库 `bhgt_test`（5 条：婴幼儿/少年/青云宗/黑风谷/落云海，字段照 §6.2、按 `code` 幂等 upsert）。此为**纯数据预置**；server 的 `stages` Mongoose model / controller 仍未实现，待 server 对话补上即自动可读。CRUD 接口仍标 🟡 待开发。
 
 ### S2b 节点 / 按钮 核心算法（依赖 S1，仍按 S2 节奏）
 - **核心算法（纯 TS 模块，与 UI 解耦）**：
