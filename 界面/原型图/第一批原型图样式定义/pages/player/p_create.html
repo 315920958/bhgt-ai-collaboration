@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>开始新游戏 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;">
+  <div class="text-center mb-20">
+    <div class="font-title" style="font-size:34px;letter-spacing:4px;">开 始 新 游 戏</div>
+    <div class="divider mt-12"><span>塑 就 此 身</span></div>
+  </div>
+
+  <div class="story-panel" style="width:100%;max-width:340px;">
+    <div class="text-sm text-grey mb-8">道号（昵称）</div>
+    <input class="form-input" placeholder="请输入你的道号" style="margin-bottom:18px;">
+
+    <div class="text-sm text-grey mb-8">选择性别</div>
+    <div class="flex gap-12" style="margin-bottom:18px;">
+      <button class="btn btn-primary" style="flex:1;padding:12px;">男</button>
+      <button class="btn btn-secondary" style="flex:1;padding:12px;">女</button>
+    </div>
+
+    <div class="text-sm text-grey mb-8">年龄</div>
+    <input class="form-input" placeholder="待定（疑问项）" disabled style="margin-bottom:8px;">
+    <div class="text-xs text-bronze">年龄的游戏作用尚未确定，先留空</div>
+  </div>
+
+  <button class="btn btn-seal" style="width:100%;max-width:340px;margin-top:24px;padding:14px;">确认 · 入世修行</button>
+</div>
+</body>
+</html>

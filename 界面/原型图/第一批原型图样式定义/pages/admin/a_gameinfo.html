@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏基本信息 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header">
+    <div><h2>游戏基本信息</h2><div class="sub">仅内部使用 · 简约配置 · 给自己人看</div></div>
+    <button class="btn btn-primary btn-sm">保存</button>
+  </div>
+
+  <div class="hint-box mb-16">阶段即卷，玩家看到的「第 N 卷」直接由大阶段顺序生成，<b>不单独配置卷名</b>。</div>
+
+  <div class="card" style="max-width:760px;">
+    <div class="text-sm text-grey mb-12">基础信息</div>
+    <div class="form-row"><div class="form-label">游戏名</div><input class="form-input" value="仙途问道"></div>
+    <div class="form-row"><div class="form-label">副标题</div><input class="form-input" value="东方修仙人生模拟器"></div>
+    <div class="form-row"><div class="form-label">版本号</div><input class="form-input" style="max-width:200px;" value="v0.1 MVP · 宋式仙册"></div>
+    <div class="divider"><span>新游戏默认值（玩家端创建角色用）</span></div>
+    <div class="form-row"><div class="form-label">默认昵称</div><input class="form-input" placeholder="留空则玩家自行填写"></div>
+    <div class="form-row"><div class="form-label">默认性别</div>
+      <select class="form-select"><option>玩家自行选择</option><option>男</option><option>女</option></select>
+    </div>
+    <div class="form-row"><div class="form-label">初始年龄</div>
+      <input class="form-input" style="max-width:120px;" placeholder="待定" value="?">
+      <span class="form-hint text-bronze">年龄的游戏作用未定，暂留空（疑问项）</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
