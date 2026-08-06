@@ -760,6 +760,12 @@ PUT /api/admin/game-config
 | **玩家** | | |
 | GET | `/api/admin/players` | 玩家（游戏角色）列表 |
 | POST | `/api/admin/players/test` | 增加测试玩家 |
+| **剧情节点** | | |
+| GET | `/api/admin/nodes` | 节点列表（可按 `stageId` / `isBattle` 过滤） |
+| GET | `/api/admin/nodes/:code` | 节点详情 |
+| POST | `/api/admin/nodes` | 新增节点 |
+| PUT | `/api/admin/nodes/:code` | 更新节点 |
+| DELETE | `/api/admin/nodes/:code` | 删除节点 |
 
 ---
 
@@ -964,3 +970,104 @@ POST /api/admin/players/test
 ```
 
 **错误**：`10001 PARAM_INVALID`（loginCode 已存在）
+
+---
+
+## 13. 剧情节点（config.nodes）
+
+> 分支剧情节点 + 3 随机按钮。按钮(buttons)与战斗配置(battleConfig)作为节点内嵌结构（无独立表）。
+> 其中 `effects` / `conditions` / `costs` / 战斗结果 等属于灵活结构，接口以 `object` 接收，便于剧情反复调整、无需改表结构。
+> 字段设计见 `database-schema.md` §6.3。路径统一用业务主键 `code`。
+
+### 13.1 节点列表
+
+```
+GET /api/admin/nodes?stageId=<可选>&isBattle=<可选 1|true|0|false>
+```
+
+- `stageId`：按所属大阶段过滤（传 `config.stages._id`）。
+- `isBattle`：传 `1` / `true` 只返回战斗节点；传 `0` / `false` 只返回非战斗节点。
+- 返回：节点数组（按 `code` 升序）。
+
+### 13.2 节点详情
+
+```
+GET /api/admin/nodes/:code
+```
+
+返回单个节点文档。不存在 → `10007 NOT_FOUND`。
+
+### 13.3 新增节点
+
+```
+POST /api/admin/nodes
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是 | 业务标识，唯一（如 `n_001`） |
+| `name` | string | 是 | 后台显示的节点名 |
+| `title` | string | 是 | 玩家可见节点标题 |
+| `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定） |
+| `text` | string | 否 | 节点正文，默认 `''` |
+| `imageUrl` | string | 否 | 配图，默认 `''` |
+| `isBattle` | boolean | 否 | 是否战斗节点，默认 false |
+| `buttonCount` | number | 否 | 随机按钮数量，默认 3 |
+| `afterCompletionOpenShop` | boolean | 否 | 完成后开商店，默认 false |
+| `battleConfig` | object | 否 | 战斗配置（灵活结构），默认 null |
+| `buttons` | array | 否 | 按钮列表，默认 `[]` |
+
+`buttons` 元素字段（均可选，除 `code`/`text`）：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `code` | string | 按钮业务标识 |
+| `text` | string | 按钮文案 |
+| `type` | `normal` \| `minigame` | 默认 `normal` |
+| `minigameId` | string | 小游戏 `config.minigames._id`（type=minigame） |
+| `isRequired` | boolean | 是否必现，默认 false |
+| `weight` | number | 随机权重，默认 1 |
+| `conditions` | object | 出现条件（灵活） |
+| `costs` | object | 消耗（灵石/道具，灵活） |
+| `effects` | object | 选择后效果（灵活） |
+| `nextNodeId` | string | 跳转到的下一节点 `config.nodes._id` |
+| `isOneTime` | boolean | 是否一次性，默认 false |
+| `afterUse` | `hide` \| `disable` | 用后隐藏/禁用，默认 `disable` |
+
+请求示例：
+
+```json
+{
+  "code": "n_001",
+  "name": "青云宗入门",
+  "title": "山门之前",
+  "text": "你立于青云宗山门前，云雾缭绕。",
+  "stageId": "66...（某 stage _id）",
+  "isBattle": false,
+  "buttonCount": 3,
+  "buttons": [
+    { "code": "b_enter", "text": "叩响山门", "weight": 1, "nextNodeId": "66...（下一节点 _id）" },
+    { "code": "b_peek", "text": "暗中观察", "type": "normal", "effects": { "spiritStone": -5 } }
+  ]
+}
+```
+
+返回：新建的节点文档。错误：`10001 PARAM_INVALID`（code / name / title 缺失或 code 重复）。
+
+### 13.4 更新节点
+
+```
+PUT /api/admin/nodes/:code
+```
+
+字段同 13.3，全部可选（缺省字段不更新）。`stageId` 传空串视为解绑。不存在 → `10007 NOT_FOUND`。
+
+### 13.5 删除节点
+
+```
+DELETE /api/admin/nodes/:code
+```
+
+返回 `{ "success": true }`。不存在 → `10007 NOT_FOUND`。
+
+> 注意：节点间靠 `buttons[].nextNodeId` / `battleConfig.success.nextNodeIds` 串成剧情图，删除节点不会自动清理其他节点对其的引用，需后台自行维护。
