@@ -704,6 +704,15 @@ PUT /api/admin/game-config
 | **全局配置** | | |
 | GET | `/api/admin/game-config` | 单例详情 |
 | PUT | `/api/admin/game-config` | 更新 |
+| **管理员账号** | | |
+| GET | `/api/admin/admins` | 管理员列表 |
+| GET | `/api/admin/admins/:id` | 管理员详情 |
+| POST | `/api/admin/admins` | 新增管理员 |
+| PUT | `/api/admin/admins/:id` | 编辑管理员 |
+| DELETE | `/api/admin/admins/:id` | 删除管理员 |
+| **玩家** | | |
+| GET | `/api/admin/players` | 玩家（游戏角色）列表 |
+| POST | `/api/admin/players/test` | 增加测试玩家 |
 
 ---
 
@@ -738,3 +747,173 @@ PUT /api/admin/game-config
 - 改 schema / 接口必须同步本文件 + `database-schema.md`
 - 新增 S2/S3 接口时另开文档（如 `player-api.md` / `gameplay-api.md`）
 - 鉴于此文档覆盖 S1，仅供 bhgt-admin 与未来的 bhgt-h5-client 配置读取场景使用
+
+---
+
+## 11. 管理员账号接口 `sys.users`（isAdmin=true）
+
+> 底层复用系统账号表 `sys.users`，仅操作 `isAdmin=true` 的记录。
+> 管理端自身通过 `/auth/admin-login` 登录，本组接口用于「增删改查管理员」。
+
+### 11.1 列表
+
+```
+GET /api/admin/admins
+```
+
+**响应** `MESSAGE_BODY`：管理员对象数组（**不含 password**）
+
+```json
+[
+  { "_id": "66...", "username": "admin", "nickname": "超管", "loginCode": "dev01", "isAdmin": true, "createdAt": "..." },
+  { "_id": "66...", "username": "oper", "nickname": "运营", "loginCode": null, "isAdmin": true, "createdAt": "..." }
+]
+```
+
+### 11.2 详情
+
+```
+GET /api/admin/admins/:id
+```
+
+**Path 参数**：`id` = 管理员 `_id`（ObjectId 字符串）
+
+**响应** `MESSAGE_BODY`：单条管理员对象（不含 password）
+
+**错误**：`10007 NOT_FOUND`
+
+### 11.3 新增
+
+```
+POST /api/admin/admins
+```
+
+**Body**：
+
+```json
+{
+  "username": "oper2",
+  "password": "123456",
+  "nickname": "运营二号",
+  "loginCode": "dev02"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `username` | string | 是 | 登录名，唯一 |
+| `password` | string | 是 | 明文，服务端以 SHA1 入库（与 admin-login 校验一致） |
+| `nickname` | string | 否 | 显示名，缺省=username |
+| `loginCode` | string | 否 | dev 登录码（稀疏唯一），用于 h5 dev-login；缺省不设置 |
+
+**响应** `MESSAGE_BODY`：新增的管理员对象（不含 password）
+
+**错误**：`10001 PARAM_INVALID`（缺 username / password / 用户名已存在 / 登录码已存在）
+
+### 11.4 编辑
+
+```
+PUT /api/admin/admins/:id
+```
+
+**Path 参数**：`id` = 管理员 `_id`
+
+**Body**（全字段可选）：
+
+```json
+{
+  "nickname": "运营二号",
+  "password": "newpass",
+  "loginCode": "dev02"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `nickname` | string | 否 | 显示名 |
+| `password` | string | 否 | 传则重算 SHA1 覆盖旧密码 |
+| `loginCode` | string | 否 | 传空字符串则清空登录码；传值则更新（需唯一） |
+
+**响应** `MESSAGE_BODY`：更新后的管理员对象（不含 password）
+
+**错误**：`10007 NOT_FOUND` / `10001 PARAM_INVALID`
+
+### 11.5 删除
+
+```
+DELETE /api/admin/admins/:id
+```
+
+**响应** `MESSAGE_BODY`：`{ success: true }`
+
+**错误**：`10007 NOT_FOUND`
+
+---
+
+## 12. 玩家接口 `game.users`
+
+> 玩家（游戏角色）存于 `game.users`，通过 `userId` 关联 `sys.users` 登录账号。
+> 本组提供玩家列表，以及「增加测试玩家」（便于 h5 dev-login 直登联调）。
+
+### 12.1 列表
+
+```
+GET /api/admin/players
+```
+
+**响应** `MESSAGE_BODY`：游戏角色数组（关联账号用户名/昵称），按创建时间倒序
+
+```json
+[
+  {
+    "_id": "66...",
+    "name": "测试角色_ab12",
+    "realm": "练气",
+    "attrs": {},
+    "userId": { "_id": "66...", "username": "test_x1", "nickname": "测试玩家", "isAdmin": false },
+    "createdAt": "..."
+  }
+]
+```
+
+### 12.2 增加测试玩家
+
+```
+POST /api/admin/players/test
+```
+
+**Body**（全字段可选）：
+
+```json
+{
+  "name": "测试角色A",
+  "nickname": "测试玩家A",
+  "loginCode": "t_demo01"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `name` | string | 否 | 角色名，缺省自动生成 |
+| `nickname` | string | 否 | 账号昵称，缺省「测试玩家」 |
+| `loginCode` | string | 否 | dev 登录码，缺省自动生成 `t_<随机>`；用于 h5 `/auth/dev-login` 直登 |
+
+**行为**：
+1. 在服务端生成唯一用户名 `test_<随机>` 与 `sys.users` 账号（isAdmin=false）
+2. 创建一条 `game.users` 游戏角色，关联上述账号
+3. 返回角色信息 + `loginCode`，管理员可据此在 h5 端 dev-login 直登
+
+**响应** `MESSAGE_BODY`：
+
+```json
+{
+  "_id": "66...（角色 id）",
+  "name": "测试角色A",
+  "realm": "",
+  "userId": "66...（账号 id）",
+  "account": { "username": "test_x1", "nickname": "测试玩家A", "isAdmin": false },
+  "loginCode": "t_demo01"
+}
+```
+
+**错误**：`10001 PARAM_INVALID`（loginCode 已存在）
