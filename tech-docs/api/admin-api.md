@@ -1125,3 +1125,55 @@ DELETE /api/admin/nodes/:code
 返回 `{ "success": true }`。不存在 → `10007 NOT_FOUND`。
 
 > 注意：节点间靠 `buttons[].nextNodeId` / `battleConfig.success.nextNodeIds` 串成剧情图，删除节点不会自动清理其他节点对其的引用，需后台自行维护。
+
+## 14. CG 图鉴（config.cgs）
+
+> 玩家可解锁/回看的 CG 内容。业务主键 `code`（如 `cg_01`），路径统一用 `code`。
+
+### 14.1 列表 / 详情 / 增 / 改 / 删
+
+```
+GET    /api/admin/cgs              # 列表，按 code 升序
+GET    /api/admin/cgs/:code        # 详情，不存在 → 10007
+POST   /api/admin/cgs              # 新增
+PUT    /api/admin/cgs/:code        # 更新（字段可选，缺省不更新）
+DELETE /api/admin/cgs/:code        # 删除，不存在 → 10007
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是(建) | 业务标识，唯一 |
+| `name` | string | 是(建) | CG 名称 |
+| `thumbnailUrl` | string | 否 | 缩略图 URL，默认 `''` |
+| `originalUrl` | string | 否 | CG 原图 URL，默认 `''` |
+| `placeholderUrl` | string | 否 | 未解锁占位图 URL，默认 `''` |
+| `reviewText` | string | 否 | 回看剧情文字，默认 `''` |
+
+错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
+
+## 15. 战斗评分档位（config.battles）
+
+> 战斗结算时算出「超额值」（实际表现超出阈值的量），落在某档位 `[minExcess, maxExcess]` 区间即采用该档位 `score`；`maxExcess = -1` 约定为无上限。
+> 业务主键 `code`（如 `bt_01`），路径统一用 `code`。
+
+### 15.1 列表 / 详情 / 增 / 改 / 删
+
+```
+GET    /api/admin/battles              # 列表，按 minExcess 升序（code 副排序）
+GET    /api/admin/battles/:code        # 详情，不存在 → 10007
+POST   /api/admin/battles              # 新增
+PUT    /api/admin/battles/:code        # 更新（字段可选，缺省不更新）
+DELETE /api/admin/battles/:code        # 删除，不存在 → 10007
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是(建) | 档位业务标识，唯一 |
+| `name` | string | 是(建) | 档位名称 |
+| `minExcess` | number | 否 | 超额下限（含），默认 `0` |
+| `maxExcess` | number | 否 | 超额上限（含），默认 `-1`（无上限） |
+| `score` | number | 否 | 档位分值，默认 `0` |
+
+错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
+
+> 全局评分乘数（所有档位分值统一乘）由 `config.game.battleConfig.scoreMultiplier` 控制，前端在「战斗评分配置」页的全局乘数卡片中编辑（见 `GAME_CONFIG_UPDATE`）。
