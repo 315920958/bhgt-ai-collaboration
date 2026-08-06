@@ -20,7 +20,7 @@ LOCAL_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SRC="$LOCAL_ROOT/nginx_conf"
 
 # ===== 服务器连接信息（按需修改，脚本不依赖任何外部 conf 文件）=====
-REMOTE_USER_HOST="root@你的服务器IP"   # 例如 root@1.2.3.4
+REMOTE_USER_HOST="ubuntu@49.232.103.103"   # 例如 root@1.2.3.4
 REMOTE_NGINX_DIR="/etc/nginx"          # Nginx 配置根目录
 SSH_OPTS=""                            # 如需指定端口/密钥：例如 "-p 22 -i ~/.ssh/id_rsa"
 # =======================================================
