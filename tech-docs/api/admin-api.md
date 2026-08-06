@@ -1008,7 +1008,9 @@ POST /api/admin/nodes
 | `code` | string | 是 | 业务标识，唯一（如 `n_001`） |
 | `name` | string | 是 | 后台显示的节点名 |
 | `title` | string | 是 | 玩家可见节点标题 |
-| `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定） |
+| `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定）。若同时提供 `eventId`，以事件所属阶段为准自动派生，无需重复传 |
+| `eventId` | string | 否 | 所属事件 `config.events._id`；节点隶属于事件，事件隶属于阶段 |
+| `referenceId` | string | 否 | 引用 ID：按钮 `nextNodeId` 与事件 `entryNodeRef`/`exitNodeRef` 引用的稳定标识；不提供则自动生成 `ref_<随机>`，全局唯一 |
 | `text` | string | 否 | 节点正文，默认 `''` |
 | `imageUrl` | string | 否 | 配图，默认 `''` |
 | `isBattle` | boolean | 否 | 是否战斗节点，默认 false |
@@ -1030,9 +1032,7 @@ POST /api/admin/nodes
 | `conditions` | object | 出现条件（灵活） |
 | `costs` | object | 消耗（灵石/道具，灵活） |
 | `effects` | object | 选择后效果（灵活） |
-| `nextNodeId` | string | 跳转到的下一节点 `config.nodes._id` |
-| `isOneTime` | boolean | 是否一次性，默认 false |
-| `afterUse` | `hide` \| `disable` | 用后隐藏/禁用，默认 `disable` |
+| `nextNodeId` | string | 跳转到的下一节点 `referenceId`（见节点 `referenceId`；可跨事件引用下一事件的入口节点） |
 
 请求示例：
 
@@ -1052,7 +1052,7 @@ POST /api/admin/nodes
       "weight": 1,
       "conditions": { "minSpiritStone": 10 },
       "effects": { "spiritStone": -5, "attributes": { "rootBone": 1 } },
-      "nextNodeId": "66...（下一节点 _id）"
+      "nextNodeId": "ref_xxxx（下一节点 referenceId，可跨事件）"
     },
     {
       "code": "b_peek",
