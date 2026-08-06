@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CG 管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>CG 管理</h2><div class="sub">永久保留 · 图鉴回看</div></div><button class="btn btn-primary btn-sm">+ 新增CG</button></div>
+  <table class="admin-table">
+    <thead><tr><th>CG ID</th><th>名称</th><th>缩略图</th><th>原图</th><th>占位图</th><th>回看剧情</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>cg_01</td><td>初入仙门</td><td>有</td><td>有</td><td>有</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>cg_02</td><td>妖兽巢穴</td><td>有</td><td>有</td><td>有</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>cg_03</td><td>月下悟道</td><td>有</td><td>有</td><td>有</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>cg_04</td><td>筑基天劫</td><td>—</td><td>—</td><td>—</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>cg_05</td><td>金丹大成</td><td>—</td><td>—</td><td>—</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>新增/编辑表单</span></div>
+  <div class="card">
+    <div class="form-row"><div class="form-label">CG名称</div><input class="form-input" placeholder="后台及图鉴名称"></div>
+    <div class="form-row"><div class="form-label">缩略图</div><input class="form-input" placeholder="图片链接"></div>
+    <div class="form-row"><div class="form-label">CG原图</div><input class="form-input" placeholder="图片链接"></div>
+    <div class="form-row"><div class="form-label">未解锁占位图</div><input class="form-input" placeholder="图片链接"></div>
+    <div class="form-row"><div class="form-label">回看剧情文字</div><textarea class="form-input" style="height:80px;" placeholder="图鉴回看内容"></textarea></div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>悟道问心 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>悟道问心</h2><div class="sub">节点 N022 · 小游戏 · 答题类</div></div></div>
+
+  <div class="game-stage" style="text-align:left;align-items:stretch;">
+    <div class="flex justify-between items-center mb-16">
+      <div class="font-title" style="font-size:20px;">第 2 / 3 题</div>
+      <div class="jade-card jade-small"><span class="label">已得分</span><span class="val">5</span></div>
+    </div>
+    <div class="story-panel" style="margin:0;">
+      <div class="story-title" style="font-size:20px;">道心之问</div>
+      <div class="story-text" style="font-size:14px;">修行之人，当以何为道？一老者问道于你，你将如何作答？</div>
+    </div>
+    <div class="mt-16 w-full">
+      <button class="choice-btn">A. 顺应天命，无为而治</button>
+      <button class="choice-btn">B. 逆天改命，自强不息</button>
+      <button class="choice-btn">C. 道法自然，随缘而适</button>
+      <button class="choice-btn">D. 斩断尘缘，唯我独尊</button>
+    </div>
+    <div class="flex gap-12 mt-16 justify-between w-full">
+      <div class="text-sm text-grey">答对得分 · 答错扣分 · 3题结束结算</div>
+      <button class="btn btn-ghost btn-sm">放弃</button>
+    </div>
+  </div>
+
+  <div class="divider"><span>结果档位预览</span></div>
+  <div class="grid-4">
+    <div class="card text-center" style="border-color:var(--val-up);"><div class="font-title val-up" style="font-size:18px;">全对</div><div class="text-xs text-grey mt-8">气运+5 评分+15</div></div>
+    <div class="card text-center"><div class="font-title text-bronze" style="font-size:18px;">答对2题</div><div class="text-xs text-grey mt-8">气运+2 评分+8</div></div>
+    <div class="card text-center"><div class="font-title" style="font-size:18px;color:var(--celadon-dark);">答对1题</div><div class="text-xs text-grey mt-8">评分+3</div></div>
+    <div class="card text-center" style="border-color:var(--val-down);"><div class="font-title val-down" style="font-size:18px;">全错</div><div class="text-xs text-grey mt-8">寿元-3</div></div>
+  </div>
+</div>
+</body>
+</html>

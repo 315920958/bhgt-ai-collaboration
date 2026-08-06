@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天赋选择 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header">
+    <div><h2>天赋选择</h2><div class="sub">本世生效 · 消耗天赋点</div></div>
+    <div class="flex gap-12 items-center">
+      <div class="jade-card jade-small"><span class="label">天赋点</span><span class="val">3</span></div>
+      <div class="jade-card jade-small"><span class="label">已选</span><span class="val">2/4</span></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>可选天赋</span></div>
+  <div class="grid-3">
+    <div class="card card-quality q-common qborder" style="cursor:pointer;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;">凡</div>
+      <div class="card-img">凡</div>
+      <div class="flex justify-between items-center"><div class="card-title">凡骨之心</div><span class="qtag q-common">凡</span></div>
+      <div class="card-desc mt-8">心如止水，波澜不惊。魅力+5。</div>
+      <div class="flex justify-between items-center mt-12"><span class="card-cost">1点</span><span class="qtag" style="color:var(--celadon-dark);border-color:var(--celadon);">已选</span></div>
+    </div>
+    <div class="card card-quality q-rare qborder" style="cursor:pointer;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-rare);color:var(--q-rare);">稀</div>
+      <div class="card-img">灵</div>
+      <div class="flex justify-between items-center"><div class="card-title">灵根慧体</div><span class="qtag q-rare">稀有</span></div>
+      <div class="card-desc mt-8">天生灵根，修炼事半功倍。根骨+8，精怪+5。</div>
+      <div class="flex justify-between items-center mt-12"><span class="card-cost">2点</span><span class="qtag" style="color:var(--celadon-dark);border-color:var(--celadon);">已选</span></div>
+    </div>
+    <div class="card card-quality q-epic qborder" style="cursor:pointer;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-epic);color:var(--q-epic);">史</div>
+      <div class="card-img">剑</div>
+      <div class="flex justify-between items-center"><div class="card-title">天生剑骨</div><span class="qtag q-epic">史诗</span></div>
+      <div class="card-desc mt-8">剑道天赋异禀，战斗判定根骨+10。</div>
+      <div class="flex justify-between items-center mt-12"><span class="card-cost">3点</span><span class="text-sm text-grey">点击选择</span></div>
+    </div>
+    <div class="card card-quality q-legend qborder" style="cursor:pointer;opacity:.7;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;">传</div>
+      <div class="card-img">命</div>
+      <div class="flex justify-between items-center"><div class="card-title">天命之子</div><span class="qtag q-legend">传说</span></div>
+      <div class="card-desc mt-8">气运加身，天命所归。气运+20。</div>
+      <div class="flex justify-between items-center mt-12"><span class="card-cost">5点</span><span class="text-sm val-down">点数不足</span></div>
+    </div>
+    <div class="card card-quality q-rare qborder" style="cursor:pointer;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-rare);color:var(--q-rare);">稀</div>
+      <div class="card-img">云</div>
+      <div class="flex justify-between items-center"><div class="card-title">青云直上</div><span class="qtag q-rare">稀有</span></div>
+      <div class="card-desc mt-8">突破境界时寿元额外+10。</div>
+      <div class="flex justify-between items-center mt-12"><span class="card-cost">2点</span><span class="text-sm text-grey">点击选择</span></div>
+    </div>
+    <div class="card card-quality q-epic qborder" style="cursor:pointer;">
+      <div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-epic);color:var(--q-epic);">史</div>
+      <div class="card-img">逆</div>
+      <div class="flex justify-between items-center"><div class="card-title">逆天改命</div><span class="qtag q-epic">史诗</span></div>
+      <div class="card-desc mt-8">每世可重投一次战斗判定。</div>
+      <div class="flex justify-between items-center mt-12"><span class="card-cost">3点</span><span class="text-sm text-grey">点击选择</span></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>本世已选天赋</span></div>
+  <div class="grid-2">
+    <div class="item-row"><div class="item-icon">凡</div><div class="item-info"><div class="iname">凡骨之心</div><div class="idesc">魅力+5</div></div><span class="qtag q-common">凡</span></div>
+    <div class="item-row"><div class="item-icon">灵</div><div class="item-info"><div class="iname">灵根慧体</div><div class="idesc">根骨+8 精怪+5</div></div><span class="qtag q-rare">稀有</span></div>
+  </div>
+
+  <div class="flex gap-12 justify-between mt-20">
+    <button class="btn btn-secondary">重置选择</button>
+    <button class="btn btn-primary">确定 · 入世修行</button>
+  </div>
+</div>
+</body>
+</html>

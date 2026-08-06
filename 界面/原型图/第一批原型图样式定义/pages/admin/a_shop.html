@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>商品管理</h2><div class="sub">引用物品 · 商店无需配置，节点通关后展示全部上架商品</div></div><button class="btn btn-primary btn-sm">+ 新增商品</button></div>
+  <table class="admin-table">
+    <thead><tr><th>商品ID</th><th>类型</th><th>引用物品</th><th>灵石价格</th><th>上架</th><th>重复购买</th><th>每世上限</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>shop_01</td><td><span class="tag">遗物</span></td><td>青铜古剑</td><td>80</td><td>是</td><td>否</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>shop_02</td><td><span class="tag">遗物</span></td><td>聚灵玉佩</td><td>150</td><td>是</td><td>否</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>shop_03</td><td><span class="tag">遗物</span></td><td>护身符</td><td>30</td><td>是</td><td>是</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>shop_04</td><td><span class="tag" style="color:var(--celadon-dark);">消耗品</span></td><td>回春丹</td><td>20</td><td>是</td><td>是</td><td>3</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>shop_05</td><td><span class="tag" style="color:var(--bronze-dark);border-color:var(--bronze-dark);">剧情道具</span></td><td>引荐函</td><td>50</td><td>是</td><td>否</td><td>1</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>shop_06</td><td><span class="tag" style="color:var(--bronze-dark);border-color:var(--bronze-dark);">剧情道具</span></td><td>密信</td><td>—</td><td>否</td><td>—</td><td>—</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="hint-box mt-16">
+    规则：灵石不足不可购买；已拥有的唯一遗物不可重复购买；消耗品每世购买次数有上限。
+  </div>
+</div>
+</body>
+</html>

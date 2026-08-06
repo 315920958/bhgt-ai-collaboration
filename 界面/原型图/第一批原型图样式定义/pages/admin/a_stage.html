@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大阶段管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>大阶段管理</h2><div class="sub">阶段串联 + 通关效果</div></div><button class="btn btn-primary btn-sm">+ 新增大阶段</button></div>
+  <table class="admin-table">
+    <thead><tr><th>阶段ID</th><th>名称</th><th>顺序</th><th>最后节点</th><th>通关寿元</th><th>下一阶段</th><th>通关文案</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>stage_01</td><td>初入仙门</td><td>1</td><td>N020</td><td>回满</td><td>stage_02</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>stage_02</td><td>筑基之劫</td><td>2</td><td>N045</td><td>固定+30</td><td>stage_03</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>stage_03</td><td>金丹大道</td><td>3</td><td>N080</td><td>不恢复</td><td>stage_04</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>stage_04</td><td>元婴化形</td><td>4</td><td>N120</td><td>回满</td><td>—</td><td>有</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>通关效果配置（示例）</span></div>
+  <div class="card">
+    <div class="form-row"><div class="form-label">阶段名称</div><input class="form-input" value="初入仙门"></div>
+    <div class="form-row"><div class="form-label">通关寿元处理</div><select class="form-select"><option>不恢复</option><option>固定恢复</option><option selected>回满</option></select></div>
+    <div class="form-row"><div class="form-label">通关效果</div><textarea class="form-input" style="height:60px;">灵石+100, 评分+20</textarea></div>
+    <div class="form-row"><div class="form-label">通关文案</div><textarea class="form-input" style="height:60px;">你终于踏入仙门，前路漫漫……</textarea></div>
+    <div class="form-row"><div class="form-label">通关图片</div><input class="form-input" placeholder="图片链接（可选）"></div>
+  </div>
+</div>
+</body>
+</html>

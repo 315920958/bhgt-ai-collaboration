@@ -1,0 +1,428 @@
+/* ============================================================
+   宋式仙册 Design Tokens v1.0
+   东方修仙人生模拟器 · UI 设计令牌
+   用法: <link rel="stylesheet" href="design-tokens.css">
+   原则: 宋代修士记录册 · 无渐变 / 无发光 / 无强阴影 / 统一宣纸底
+   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+XiaoWei&display=swap");
+/* 字体降级说明: 标题 Ma Shan Zheng → 楷体; 正文 Noto Serif SC → 宋体。
+   离线/内网环境 Google Fonts 加载失败时自动降级, 不影响布局。 */
+
+/* ============================================================
+   宋式仙册 设计系统  Design System V1
+   东方修仙人生模拟器 · MVP
+   原则：宋代修士记录册 · 简洁留白统一 · 无渐变无发光无强阴影
+   ============================================================ */
+:root{
+  /* 核心色（仅5种） */
+  --ink-black:#1C1B18;
+  --paper-white:#E8E1D2;
+  --celadon:#789B95;
+  --grey:#8A867D;
+  --bronze:#A27B45;
+  /* 辅助色（仅用于层次/状态，不大面积铺色） */
+  --paper-dark:#D4CBB8;
+  --paper-darker:#C2B89E;
+  --celadon-dark:#5A7B75;
+  --grey-dark:#6B6860;
+  --bronze-dark:#8A6537;
+  /* 数值色（仅用于数值状态） */
+  --val-up:#6FAF9B;
+  --val-neutral:#8A867D;
+  --val-down:#B1443D;
+  /* 品质色（仅用于边框和小标签，不做大面积填充） */
+  --q-common:#B5B0A5;
+  --q-rare:#6B8FBE;
+  --q-epic:#9B6BBE;
+  --q-legend:#A27B45;
+  /* 字体 */
+  --font-title:"Ma Shan Zheng","STKaiti","楷体",serif;
+  --font-sub:"ZCOOL XiaoWei","STKaiti",serif;
+  --font-body:"Noto Serif SC","STSong","SimSun",serif;
+  /* 圆角（偏小，更古籍感） */
+  --r-sm:3px;
+  --r-md:5px;
+  --r-lg:8px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  font-family:var(--font-body);
+  background:var(--paper-white);
+  color:var(--ink-black);
+  font-size:14px;
+  line-height:1.7;
+  
+}
+
+/* ===== 布局：侧栏导航 + 主内容 ===== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== 页面标题 ===== */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:22px;padding-bottom:14px;
+  border-bottom:1px solid var(--paper-darker);
+}
+.page-header h2{
+  font-family:var(--font-title);
+  font-size:28px;color:var(--ink-black);
+  letter-spacing:3px;
+}
+.page-header .sub{font-size:12px;color:var(--grey);}
+
+/* ===== 玉牌（宣纸底 + 青瓷边框 + 墨字） ===== */
+.jade-card{
+  background:var(--paper-white);
+  border:1px solid var(--celadon);
+  border-radius:var(--r-md);
+  padding:16px;color:var(--ink-black);
+  position:relative;
+}
+.jade-large{display:flex;align-items:center;gap:16px;}
+.jade-avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--paper-dark);
+  border:1px solid var(--bronze-dark);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:28px;
+  color:var(--ink-black);flex-shrink:0;
+}
+.jade-info .name{font-family:var(--font-title);font-size:22px;color:var(--ink-black);}
+.jade-info .meta{font-size:12px;color:var(--grey-dark);margin-top:2px;}
+.jade-small{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;}
+.jade-small .label{font-size:11px;color:var(--grey-dark);}
+.jade-small .val{font-family:var(--font-title);font-size:20px;color:var(--ink-black);}
+
+/* ===== 按钮（宣纸底 + 暗金细边框 + 墨字） ===== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 28px;font-family:var(--font-sub);font-size:16px;
+  border:none;border-radius:var(--r-sm);cursor:pointer;
+  transition:all .2s;letter-spacing:2px;
+}
+.btn-primary{
+  background:var(--paper-white);
+  color:var(--ink-black);
+  border:1px solid var(--bronze-dark);
+}
+.btn-primary:hover{background:var(--paper-dark);}
+.btn-secondary{
+  background:transparent;color:var(--ink-black);
+  border:1px solid var(--paper-darker);
+}
+.btn-secondary:hover{background:var(--paper-dark);}
+.btn-text{background:none;color:var(--grey-dark);padding:6px 12px;font-size:13px;border:none;cursor:pointer;}
+.btn-text:hover{color:var(--ink-black);}
+.btn-sm{padding:5px 14px;font-size:13px;}
+.btn-ghost{background:var(--paper-white);color:var(--grey-dark);border:1px solid var(--paper-darker);}
+/* 朱砂印章按钮（特殊操作） */
+.btn-seal{
+  background:var(--val-down);color:var(--paper-white);
+  border:1px solid var(--val-down);
+  padding:10px 28px;font-family:var(--font-sub);font-size:16px;
+  border-radius:var(--r-sm);cursor:pointer;letter-spacing:2px;
+  transition:all .2s;
+}
+.btn-seal:hover{opacity:.85;}
+
+/* ===== 品质标签（边框风格，不填色） ===== */
+.qtag{
+  display:inline-block;padding:2px 10px;
+  font-size:11px;font-family:var(--font-sub);
+  border-radius:2px;letter-spacing:1px;
+  background:transparent;border:1px solid currentColor;
+}
+.qtag.q-common{color:var(--q-common);border-color:var(--q-common);}
+.qtag.q-rare{color:var(--q-rare);border-color:var(--q-rare);}
+.qtag.q-epic{color:var(--q-epic);border-color:var(--q-epic);}
+.qtag.q-legend{color:var(--bronze-dark);border-color:var(--bronze-dark);}
+
+/* ===== 卡片（宣纸底 + 细线边框，无阴影） ===== */
+.card{
+  background:var(--paper-white);
+  border:1px solid var(--paper-darker);
+  border-radius:var(--r-md);
+  padding:16px;position:relative;
+}
+.card-quality{overflow:hidden;}
+.card-quality .qborder{border-width:1px;border-style:solid;}
+.card-quality.q-common{border-color:var(--q-common);}
+.card-quality.q-rare{border-color:var(--q-rare);}
+.card-quality.q-epic{border-color:var(--q-epic);}
+.card-quality.q-legend{border-color:var(--bronze-dark);}
+.card-img{
+  width:100%;height:120px;
+  background:var(--paper-dark);
+  border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:32px;
+  color:var(--grey);margin-bottom:10px;
+}
+.card-title{font-family:var(--font-sub);font-size:17px;margin-bottom:4px;color:var(--ink-black);}
+.card-desc{font-size:12px;color:var(--grey-dark);line-height:1.6;}
+.card-cost{font-family:var(--font-title);color:var(--bronze-dark);font-size:15px;}
+
+/* ===== 进度条（纯色填充，无渐变） ===== */
+.bar{height:8px;background:var(--paper-dark);border-radius:4px;overflow:hidden;position:relative;border:1px solid var(--paper-darker);}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s;}
+.bar-xiujing{background:var(--celadon);}
+.bar-exp{background:var(--bronze);}
+.bar-shouyuan{background:var(--val-up);}
+.bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--grey-dark);margin-bottom:3px;}
+
+/* ===== 数值 ===== */
+.val-up{color:var(--val-up);font-weight:600;}
+.val-down{color:var(--val-down);font-weight:600;}
+.val-neutral{color:var(--val-neutral);}
+
+/* ===== 属性行 ===== */
+.attr-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;border-bottom:1px dashed var(--paper-darker);
+}
+.attr-row:last-child{border-bottom:none;}
+.attr-name{font-size:13px;color:var(--grey-dark);}
+.attr-val{font-family:var(--font-title);font-size:18px;color:var(--ink-black);}
+
+/* ===== 标签（青瓷描边） ===== */
+.tag{
+  display:inline-block;padding:3px 12px;
+  font-size:12px;border-radius:2px;
+  background:transparent;
+  color:var(--celadon-dark);
+  border:1px solid var(--celadon);
+}
+
+/* ===== 装饰分隔线（纯线，无渐变） ===== */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:18px 0;color:var(--grey);
+}
+.divider::before,.divider::after{
+  content:"";flex:1;height:1px;
+  background:var(--paper-darker);
+}
+.divider span{font-family:var(--font-sub);font-size:14px;color:var(--grey-dark);}
+
+/* ===== 印章（朱砂方印） ===== */
+.seal{
+  position:absolute;top:8px;right:8px;
+  width:36px;height:36px;border:1px solid var(--val-down);
+  color:var(--val-down);border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:14px;
+  transform:rotate(-8deg);opacity:.7;
+}
+
+/* ===== 后台专用 ===== */
+.admin-table{
+  width:100%;border-collapse:collapse;
+  background:var(--paper-white);
+  border:1px solid var(--paper-darker);
+  border-radius:var(--r-md);overflow:hidden;
+}
+.admin-table th{
+  background:var(--paper-dark);color:var(--ink-black);
+  padding:10px 14px;text-align:left;font-size:13px;
+  font-family:var(--font-sub);font-weight:normal;letter-spacing:1px;
+  border-bottom:1px solid var(--paper-darker);
+}
+.admin-table td{padding:9px 14px;border-bottom:1px solid var(--paper-darker);font-size:13px;color:var(--ink-black);}
+.admin-table tr:hover td{background:var(--paper-dark);}
+.admin-table tr:last-child td{border-bottom:none;}
+.form-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.form-label{width:120px;font-size:13px;color:var(--grey-dark);text-align:right;flex-shrink:0;}
+.form-input{
+  flex:1;padding:7px 12px;font-size:13px;
+  border:1px solid var(--paper-darker);
+  border-radius:var(--r-sm);background:var(--paper-white);
+  font-family:var(--font-body);color:var(--ink-black);
+}
+.form-input:focus{outline:none;border-color:var(--celadon);}
+.form-select{padding:7px 12px;font-size:13px;border:1px solid var(--paper-darker);border-radius:var(--r-sm);background:var(--paper-white);font-family:var(--font-body);color:var(--ink-black);}
+.form-hint{font-size:11px;color:var(--grey);margin-left:8px;}
+
+/* ===== 网格 ===== */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+
+/* ===== 颜色样本块（设计系统展示用） ===== */
+.swatch{border-radius:var(--r-sm);padding:14px;text-align:center;font-size:12px;border:1px solid var(--paper-darker);}
+.swatch .hex{font-family:monospace;font-size:11px;opacity:.7;margin-top:2px;}
+
+/* ===== 背景说明块 ===== */
+.bg-sample{height:80px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:var(--font-sub);color:var(--ink-black);font-size:14px;border:1px solid var(--paper-darker);background:var(--paper-white);}
+
+/* ===== Tab ===== */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--paper-darker);margin-bottom:18px;}
+.tab{
+  padding:8px 22px;font-size:14px;cursor:pointer;
+  font-family:var(--font-sub);color:var(--grey-dark);
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all .2s;
+}
+.tab:hover{color:var(--ink-black);}
+.tab.active{color:var(--ink-black);border-bottom-color:var(--bronze-dark);}
+
+/* ===== 弹窗 ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(28,27,24,.4);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;
+}
+.modal{
+  background:var(--paper-white);border:1px solid var(--bronze-dark);
+  border-radius:var(--r-lg);padding:28px;max-width:420px;
+}
+.modal h3{font-family:var(--font-title);font-size:22px;margin-bottom:14px;color:var(--ink-black);}
+.modal p{font-size:14px;color:var(--grey-dark);margin-bottom:20px;}
+
+/* ===== 小游戏舞台 ===== */
+.game-stage{
+  background:var(--paper-white);border:1px solid var(--paper-darker);
+  border-radius:var(--r-md);padding:30px;min-height:340px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+
+/* ===== 剧情节点 ===== */
+.story-panel{
+  background:var(--paper-white);border:1px solid var(--paper-darker);
+  border-radius:var(--r-md);padding:24px;margin:16px 0;
+}
+.story-title{font-family:var(--font-title);font-size:24px;color:var(--ink-black);margin-bottom:12px;}
+.story-text{font-size:15px;line-height:2;color:var(--grey-dark);text-indent:2em;}
+.story-img{
+  width:100%;height:180px;background:var(--paper-dark);
+  border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:36px;color:var(--grey);
+  margin:16px 0;
+}
+.choice-btn{
+  display:block;width:100%;text-align:left;
+  padding:14px 18px;margin-bottom:10px;
+  background:var(--paper-white);border:1px solid var(--paper-darker);
+  border-radius:var(--r-sm);cursor:pointer;font-size:14px;
+  font-family:var(--font-body);color:var(--ink-black);
+  transition:all .2s;position:relative;
+}
+.choice-btn:hover{border-color:var(--bronze);background:var(--paper-dark);}
+.choice-btn .cost-tip{font-size:12px;color:var(--val-down);margin-left:8px;}
+.choice-btn .once-tag{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--grey);}
+
+/* ===== 顶部标题栏(游戏内) ===== */
+.game-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--paper-dark);color:var(--ink-black);
+  padding:10px 18px;border:1px solid var(--paper-darker);
+  border-radius:var(--r-md);
+  margin-bottom:16px;
+}
+.game-topbar .book-name{font-family:var(--font-title);font-size:18px;color:var(--ink-black);letter-spacing:2px;}
+.game-topbar .top-actions{display:flex;gap:8px;}
+.game-topbar .top-icon{
+  width:32px;height:32px;border:1px solid var(--paper-darker);
+  border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:var(--ink-black);
+}
+.game-topbar .top-icon:hover{background:var(--paper-white);}
+
+/* ===== 结算 ===== */
+.settle-grade{
+  text-align:center;padding:30px;
+  background:var(--paper-white);
+  border:1px solid var(--bronze-dark);
+  border-radius:var(--r-lg);color:var(--ink-black);margin-bottom:20px;
+}
+.settle-grade .grade-name{font-family:var(--font-title);font-size:36px;letter-spacing:6px;color:var(--ink-black);}
+.settle-grade .grade-score{font-size:14px;color:var(--grey-dark);margin-top:6px;}
+
+/* ===== CG 图鉴 ===== */
+.cg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.cg-item{
+  aspect-ratio:4/3;border-radius:var(--r-sm);
+  border:1px solid var(--paper-darker);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:22px;
+  cursor:pointer;transition:all .2s;position:relative;
+}
+.cg-item.unlocked{background:var(--paper-dark);color:var(--ink-black);border-color:var(--paper-darker);}
+.cg-item.locked{background:var(--paper-white);color:var(--grey);border-style:dashed;}
+
+/* ===== 图标徽章 ===== */
+.icon-badge{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--paper-white);border:1px solid var(--bronze-dark);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:22px;color:var(--ink-black);cursor:pointer;
+  transition:all .2s;
+}
+.icon-badge:hover{background:var(--paper-dark);}
+
+/* ===== 商店/背包物品行 ===== */
+.item-row{
+  display:flex;align-items:center;gap:14px;
+  padding:12px;background:var(--paper-white);
+  border:1px solid var(--paper-darker);border-radius:var(--r-sm);
+  margin-bottom:10px;
+}
+.item-icon{
+  width:52px;height:52px;border-radius:var(--r-sm);
+  background:var(--paper-dark);
+  border:1px solid var(--paper-darker);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:24px;color:var(--ink-black);
+  flex-shrink:0;
+}
+.item-info{flex:1;}
+.item-info .iname{font-family:var(--font-sub);font-size:15px;color:var(--ink-black);}
+.item-info .idesc{font-size:12px;color:var(--grey-dark);}
+.item-price{font-family:var(--font-title);color:var(--bronze-dark);font-size:18px;}
+.item-qty{font-family:var(--font-title);color:var(--grey-dark);font-size:16px;}
+
+/* ===== 临时状态 ===== */
+.temp-status{
+  background:var(--paper-white);border:1px dashed var(--val-down);
+  border-radius:var(--r-sm);padding:8px 12px;
+  display:flex;align-items:center;gap:8px;font-size:12px;
+}
+.temp-status .temp-val{color:var(--val-down);font-weight:600;}
+
+/* ===== 提示框 ===== */
+.hint-box{
+  background:var(--paper-white);
+  border:1px solid var(--paper-darker);
+  border-radius:var(--r-sm);padding:12px;
+  font-size:13px;color:var(--grey-dark);
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--paper-dark);}
+::-webkit-scrollbar-thumb{background:var(--grey);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--grey-dark);}
+
+/* ===== 辅助 ===== */
+.flex{display:flex;} .flex-col{flex-direction:column;} .items-center{align-items:center;} .justify-between{justify-content:space-between;}
+.gap-8{gap:8px;} .gap-12{gap:12px;} .gap-16{gap:16px;} .gap-20{gap:20px;}
+.mt-8{margin-top:8px;} .mt-12{margin-top:12px;} .mt-16{margin-top:16px;} .mt-20{margin-top:20px;}
+.mb-8{margin-bottom:8px;} .mb-12{margin-bottom:12px;} .mb-16{margin-bottom:16px;} .mb-20{margin-bottom:20px;}
+.text-center{text-align:center;} .text-sm{font-size:12px;} .text-xs{font-size:11px;}
+.text-grey{color:var(--grey-dark);} .text-bronze{color:var(--bronze-dark);}
+.font-title{font-family:var(--font-title);} .font-sub{font-family:var(--font-sub);}
+.w-full{width:100%;} .flex-1{flex:1;}

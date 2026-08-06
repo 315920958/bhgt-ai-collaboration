@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>广告管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>广告管理</h2><div class="sub">只配置广告本身，广告后效果在节点/战斗/小游戏中配置</div></div><button class="btn btn-primary btn-sm">+ 新增广告</button></div>
+  <table class="admin-table">
+    <thead><tr><th>广告ID</th><th>广告图片</th><th>引用位置</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>ad_01</td><td>复活广告.png</td><td><span class="tag">战斗失败 · N012</span></td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>ad_02</td><td>双倍奖励.png</td><td><span class="tag">小游戏 · 灵力转盘</span></td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>ad_03</td><td>减少惩罚.png</td><td><span class="tag">小游戏 · 丹药炼制</span></td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>新增/编辑</span></div>
+  <div class="card">
+    <div class="form-row"><div class="form-label">广告ID</div><input class="form-input" placeholder="ad_04"></div>
+    <div class="form-row"><div class="form-label">广告图片</div><input class="form-input" placeholder="图片链接"></div>
+    <div class="form-row"><div class="form-label"></div><button class="btn btn-primary btn-sm">保存</button></div>
+  </div>
+  <div class="hint-box mt-16">
+    说明：广告完成后的效果（如复活、双倍奖励、减少惩罚）由节点战斗配置、小游戏结果档位配置决定，不在此处配置。
+  </div>
+</div>
+</body>
+</html>

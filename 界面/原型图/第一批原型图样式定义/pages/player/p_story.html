@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>剧情节点 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="game-topbar">
+    <div class="flex items-center gap-12">
+      <div class="book-name">第一卷 · 初入仙门</div>
+    </div>
+    <div class="flex gap-8 items-center">
+      <div class="jade-card jade-small" style="padding:4px 12px;"><span class="label">寿</span><span class="val" style="font-size:16px;">85</span></div>
+      <div class="jade-card jade-small" style="padding:4px 12px;"><span class="label">石</span><span class="val" style="font-size:16px;">120</span></div>
+      <div class="top-icon">属</div>
+      <div class="top-icon">包</div>
+    </div>
+  </div>
+
+  <div class="story-panel">
+    <div class="story-title">初入仙门</div>
+    <div class="story-img">山 门</div>
+    <div class="story-text">
+      青云山巅，云雾缭绕。你立于山门之前，仰望着那块刻有"青云宗"三字的古朴石碑。守门弟子见你前来，微微颔首。一位白衣长老自山道缓步而下，目光在你身上停留片刻，似在审视你的根骨资质。
+    </div>
+    <div class="story-text mt-8">
+      "年轻人，"长老开口，声音如清风拂过松林，"你可知踏入此门，便再无回头之路？修仙之路漫漫，生死无常，你可想好了？"
+    </div>
+  </div>
+
+  <div class="divider"><span>选择</span></div>
+  <div>
+    <button class="choice-btn">
+      <span>上前拜见长老，请求入门</span>
+    </button>
+    <button class="choice-btn">
+      <span>默立不语，等长老先开口</span>
+    </button>
+    <button class="choice-btn">
+      <span>递上引荐信函</span>
+      <span class="cost-tip">消耗 · 引荐函 ×1</span>
+      <span class="once-tag">一次性</span>
+    </button>
+  </div>
+
+  <div class="flex gap-12 mt-16 justify-between">
+    <div class="text-sm text-grey">节点：N001 · 青云山门</div>
+    <div class="flex gap-8">
+      <button class="btn btn-ghost btn-sm">查看商店</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

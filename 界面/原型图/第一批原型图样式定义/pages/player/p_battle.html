@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>战斗结果 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>战斗结算</h2><div class="sub">节点 N012 · 妖兽巢穴</div></div></div>
+
+  <div class="card text-center" style="padding:40px;border:1px solid var(--val-up);">
+    <div style="font-family:var(--font-title);font-size:48px;color:var(--val-up);letter-spacing:8px;">战 斗 成 功</div>
+    <div class="text-sm text-grey mt-12">你以深厚根骨突破重围，斩杀妖兽</div>
+    <div class="story-img mt-16" style="height:140px;">胜</div>
+  </div>
+
+  <div class="divider"><span>战斗结算</span></div>
+  <div class="card">
+    <div class="attr-row"><span class="attr-name">根骨</span><span class="val-up font-title" style="font-size:18px;">+2</span></div>
+    <div class="attr-row"><span class="attr-name">寿元</span><span class="val-down font-title" style="font-size:18px;">-3</span></div>
+    <div class="attr-row"><span class="attr-name">灵石</span><span class="val-up font-title" style="font-size:18px;">+50</span></div>
+    <div class="attr-row"><span class="attr-name">评分点数</span><span class="val-up font-title" style="font-size:18px;">+15</span></div>
+    <div class="attr-row"><span class="attr-name">获得遗物</span><span class="font-title text-bronze" style="font-size:16px;">青铜古剑 <span class="qtag q-rare" style="margin-left:8px;">稀有</span></span></div>
+    <div class="attr-row"><span class="attr-name">解锁 CG</span><span class="font-title text-bronze" style="font-size:16px;">妖兽巢穴·初探</span></div>
+  </div>
+
+  <div class="card mt-16">
+    <div class="text-sm text-grey mb-8">本次评分明细</div>
+    <div class="flex justify-between text-sm"><span>超额属性点总和</span><span>22</span></div>
+    <div class="flex justify-between text-sm mt-8"><span>评分档位</span><span class="text-bronze font-sub">游刃有余</span></div>
+    <div class="flex justify-between text-sm mt-8"><span>档位分值 × 乘数</span><span>15 × 1.0</span></div>
+    <div class="flex justify-between text-sm mt-8"><span>本次评分</span><span class="val-up font-title" style="font-size:16px;">+15</span></div>
+  </div>
+
+  <div class="flex gap-12 mt-20 justify-between">
+    <button class="btn btn-secondary">查看商店</button>
+    <button class="btn btn-primary">继续前行</button>
+  </div>
+</div>
+</body>
+</html>

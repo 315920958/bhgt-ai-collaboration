@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵力转盘 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header">
+    <div><h2>灵力转盘</h2><div class="sub">节点 N015 · 小游戏 · 赌运类</div></div>
+    <div class="flex gap-8 items-center">
+      <div class="jade-card jade-small"><span class="label">灵石</span><span class="val">120</span></div>
+    </div>
+  </div>
+
+  <div class="game-stage">
+    <div style="font-family:var(--font-title);font-size:20px;color:var(--ink-black);margin-bottom:20px;">消耗灵石转动转盘，赢取奖励</div>
+    <!-- 转盘 SVG -->
+    <svg width="280" height="280" viewBox="0 0 280 280" style="margin-bottom:20px;">
+      <circle cx="140" cy="140" r="130" fill="none" stroke="#A27B45" stroke-width="2"/>
+      <path d="M140,140 L140,10 A130,130 0 0,1 262,90 Z" fill="#E8E1D2" stroke="#C2B89E" stroke-width="1"/>
+      <path d="M140,140 L262,90 A130,130 0 0,1 220,240 Z" fill="#D4CBB8" stroke="#C2B89E" stroke-width="1"/>
+      <path d="M140,140 L220,240 A130,130 0 0,1 60,240 Z" fill="#E8E1D2" stroke="#C2B89E" stroke-width="1"/>
+      <path d="M140,140 L60,240 A130,130 0 0,1 18,90 Z" fill="#D4CBB8" stroke="#C2B89E" stroke-width="1"/>
+      <path d="M140,140 L18,90 A130,130 0 0,1 140,10 Z" fill="#E8E1D2" stroke="#C2B89E" stroke-width="1"/>
+      <circle cx="140" cy="140" r="20" fill="#8A6537"/>
+      <text x="140" y="40" text-anchor="middle" font-family="Ma Shan Zheng" font-size="14" fill="#1C1B18">大吉</text>
+      <text x="245" y="145" text-anchor="middle" font-family="Ma Shan Zheng" font-size="14" fill="#1C1B18">中吉</text>
+      <text x="140" y="255" text-anchor="middle" font-family="Ma Shan Zheng" font-size="14" fill="#1C1B18">小吉</text>
+      <text x="35" y="145" text-anchor="middle" font-family="Ma Shan Zheng" font-size="14" fill="#B1443D">凶</text>
+      <text x="80" y="60" text-anchor="middle" font-family="Ma Shan Zheng" font-size="14" fill="#8A867D">空</text>
+      <polygon points="140,5 132,20 148,20" fill="#B1443D"/>
+    </svg>
+    <div class="flex gap-12 items-center">
+      <button class="btn btn-primary">转动（消耗 10 灵石）</button>
+      <button class="btn btn-secondary">加码（消耗 30 灵石）</button>
+    </div>
+    <div class="text-xs text-grey mt-12">一次性小游戏 · 执行后不可再进入</div>
+  </div>
+
+  <div class="divider"><span>结果档位</span></div>
+  <div class="grid-3">
+    <div class="card text-center" style="border-color:var(--val-up);"><div class="font-title val-up" style="font-size:22px;">大吉</div><div class="text-sm text-grey mt-8">寿元+15 评分+10</div></div>
+    <div class="card text-center"><div class="font-title text-bronze" style="font-size:22px;">中吉</div><div class="text-sm text-grey mt-8">寿元+8 评分+5</div></div>
+    <div class="card text-center"><div class="font-title" style="font-size:22px;color:var(--celadon-dark);">小吉</div><div class="text-sm text-grey mt-8">寿元+3</div></div>
+    <div class="card text-center"><div class="font-title val-neutral" style="font-size:22px;">空</div><div class="text-sm text-grey mt-8">无变化</div></div>
+    <div class="card text-center" style="border-color:var(--val-down);"><div class="font-title val-down" style="font-size:22px;">凶</div><div class="text-sm text-grey mt-8">寿元-5 评分-3</div></div>
+    <div class="card text-center" style="border-color:var(--val-down);"><div class="font-title val-down" style="font-size:22px;">大凶</div><div class="text-sm text-grey mt-8">寿元-10 临时属性-3</div></div>
+  </div>
+  <div class="hint-box mt-16">
+    允许灵石加码：加码后奖励档位提升一级。可观看广告获得双倍奖励。
+  </div>
+</div>
+</body>
+</html>

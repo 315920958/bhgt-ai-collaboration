@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计规范总览 · 宋式仙册</title>
+<link rel="stylesheet" href="design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>设计规范总览</h2><div class="sub">东方修仙人生模拟器 · MVP · 宋式仙册 Design System V1</div></div></div>
+
+  <div class="divider"><span>设计理念</span></div>
+  <p style="font-size:14px;color:var(--grey-dark);max-width:780px;">以宋代美学为基础，融合古籍、玉器、山水、书法等元素，克制雅致，简洁留白。UI 应如宋代修士使用的记录册，而非现代仙侠手游或抽卡界面。</p>
+
+  <div class="divider"><span>一、核心色（仅5种）</span></div>
+  <div class="grid-5" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
+    <div class="swatch" style="background:#1C1B18;color:#E8E1D2;"><div>墨黑</div><div class="hex">#1C1B18</div></div>
+    <div class="swatch" style="background:#E8E1D2;"><div>宣纸白</div><div class="hex">#E8E1D2</div></div>
+    <div class="swatch" style="background:#789B95;color:#E8E1D2;"><div>青瓷青</div><div class="hex">#789B95</div></div>
+    <div class="swatch" style="background:#8A867D;color:#E8E1D2;"><div>宋灰</div><div class="hex">#8A867D</div></div>
+    <div class="swatch" style="background:#A27B45;color:#E8E1D2;"><div>古铜暗金</div><div class="hex">#A27B45</div></div>
+  </div>
+  <p class="text-sm text-grey mt-8">辅助色（纸深/青深/铜深等）仅用于层次区分和状态标识，不大面积铺色。禁止高饱和色、发光效果、金色渐变、蓝紫大面积铺色。</p>
+
+  <div class="divider"><span>二、品质色（仅用于边框和标签）</span></div>
+  <div class="grid-4">
+    <div class="swatch" style="border:1px solid #B5B0A5;"><div style="color:#B5B0A5;">凡 · 白</div><div class="hex">#B5B0A5</div></div>
+    <div class="swatch" style="border:1px solid #6B8FBE;"><div style="color:#6B8FBE;">蓝 · 稀有</div><div class="hex">#6B8FBE</div></div>
+    <div class="swatch" style="border:1px solid #9B6BBE;"><div style="color:#9B6BBE;">紫 · 史诗</div><div class="hex">#9B6BBE</div></div>
+    <div class="swatch" style="border:1px solid #A27B45;"><div style="color:#A27B45;">金 · 传说</div><div class="hex">#A27B45</div></div>
+  </div>
+  <p class="text-sm text-grey mt-8">品质区别不改变卡片背景颜色。改为：宣纸卡片 + 品质边框 + 小印章 + 品质标签。</p>
+
+  <div class="divider"><span>三、数值色（仅用于状态）</span></div>
+  <div class="grid-3">
+    <div class="card text-center"><div class="val-up" style="font-size:22px;font-family:var(--font-title);">+5</div><div class="text-sm mt-8">提升 / 正面</div><div class="text-xs text-grey">#6FAF9B</div></div>
+    <div class="card text-center"><div class="val-neutral" style="font-size:22px;font-family:var(--font-title);">35</div><div class="text-sm mt-8">普通 / 中性</div><div class="text-xs text-grey">#8A867D</div></div>
+    <div class="card text-center"><div class="val-down" style="font-size:22px;font-family:var(--font-title);">-3</div><div class="text-sm mt-8">降低 / 负面</div><div class="text-xs text-grey">#B1443D</div></div>
+  </div>
+
+  <div class="divider"><span>四、字体</span></div>
+  <div class="grid-2">
+    <div class="card">
+      <div style="font-family:var(--font-title);font-size:36px;color:var(--ink-black);">仙途问道</div>
+      <div class="text-sm text-grey mt-8">标题字体 · 书法风格 · Ma Shan Zheng / 楷体</div>
+    </div>
+    <div class="card">
+      <div style="font-family:var(--font-body);font-size:16px;color:var(--ink-black);line-height:2;">道可道，非常道。名可名，非常名。无名天地之始，有名万物之母。</div>
+      <div class="text-sm text-grey mt-8">正文字体 · 宋体风格 · Noto Serif SC / 宋体</div>
+    </div>
+  </div>
+
+  <div class="divider"><span>五、核心组件</span></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="text-sm text-grey mb-12">信息玉牌（大）— 宣纸底 + 青瓷边框 + 墨字</div>
+      <div class="jade-card jade-large">
+        <div class="jade-avatar">李</div>
+        <div class="jade-info"><div class="name">李长生</div><div class="meta">18岁 · 炼气三层 · 男</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">信息玉牌（小）</div>
+      <div class="flex gap-12">
+        <div class="jade-card jade-small"><span class="label">寿元</span><span class="val">85</span></div>
+        <div class="jade-card jade-small"><span class="label">灵石</span><span class="val">120</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-16">
+    <div class="text-sm text-grey mb-12">按钮组 — 宣纸底 + 暗金细边框 + 墨字（特殊操作用朱砂印章）</div>
+    <div class="flex gap-12 items-center">
+      <button class="btn btn-primary">确定</button>
+      <button class="btn btn-secondary">返回</button>
+      <button class="btn btn-text">查看详情</button>
+      <button class="btn btn-sm btn-ghost">使用</button>
+      <button class="btn btn-seal">重生</button>
+    </div>
+  </div>
+
+  <div class="card mt-16">
+    <div class="text-sm text-grey mb-12">品质卡片 — 宣纸底 + 品质边框 + 印章标签（不改变背景色）</div>
+    <div class="grid-4">
+      <div class="card card-quality q-common qborder"><div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;">凡</div><div class="card-img">凡</div><div class="card-title">凡骨之心</div><div class="card-desc">心如止水，波澜不惊。</div><div class="card-cost mt-8">1点</div></div>
+      <div class="card card-quality q-rare qborder"><div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-rare);color:var(--q-rare);">稀</div><div class="card-img">灵</div><div class="card-title">灵根慧体</div><div class="card-desc">天生灵根，修炼事半功倍。</div><div class="card-cost mt-8">2点</div></div>
+      <div class="card card-quality q-epic qborder"><div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;border-color:var(--q-epic);color:var(--q-epic);">史</div><div class="card-img">剑</div><div class="card-title">天生剑骨</div><div class="card-desc">剑道天赋异禀，剑灵亲和。</div><div class="card-cost mt-8">3点</div></div>
+      <div class="card card-quality q-legend qborder"><div class="seal" style="position:absolute;top:6px;right:6px;width:24px;height:24px;font-size:10px;">传</div><div class="card-img">命</div><div class="card-title">天命之子</div><div class="card-desc">气运加身，天命所归。</div><div class="card-cost mt-8">5点</div></div>
+    </div>
+  </div>
+
+  <div class="grid-2 mt-16">
+    <div class="card">
+      <div class="text-sm text-grey mb-12">进度条 — 纯色填充</div>
+      <div class="bar-label"><span>修为</span><span>1200/3000</span></div>
+      <div class="bar"><div class="bar-fill bar-xiujing" style="width:40%"></div></div>
+      <div class="bar-label mt-12"><span>经验</span><span>560/1000</span></div>
+      <div class="bar"><div class="bar-fill bar-exp" style="width:56%"></div></div>
+      <div class="bar-label mt-12"><span>寿元</span><span>85/100</span></div>
+      <div class="bar"><div class="bar-fill bar-shouyuan" style="width:85%"></div></div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">标签</div>
+      <div class="flex gap-8 mb-16" style="flex-wrap:wrap;">
+        <span class="tag">修炼</span><span class="tag">机缘</span><span class="tag">战斗</span><span class="tag">情绪</span><span class="tag">奇遇</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span>六、背景体系</span></div>
+  <div class="card">
+    <p class="text-sm text-grey">统一宣纸背景。特殊页面可增加淡墨山水纹理，但不改变整体色调。不再为不同页面创建不同颜色背景。</p>
+  </div>
+
+  <div class="divider"><span>七、弹窗（广告入口暂定弹出按钮）</span></div>
+  <div class="card">
+    <div class="modal-overlay" style="position:relative;background:rgba(0,0,0,.15);">
+      <div class="modal" style="max-width:360px;">
+        <h3>观看广告</h3>
+        <p>是否观看广告以复活并继续战斗？</p>
+        <div class="flex gap-12 justify-between">
+          <button class="btn btn-secondary flex-1">放弃</button>
+          <button class="btn btn-primary flex-1">观看</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:40px;"></div>
+</div>
+</body>
+</html>

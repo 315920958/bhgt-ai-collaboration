@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>按钮管理 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active">
+  <div class="page-header"><div><h2>按钮管理</h2><div class="sub">基础 / 开启条件 / 消耗 / 效果</div></div><button class="btn btn-primary btn-sm">+ 新增按钮</button></div>
+  <table class="admin-table">
+    <thead><tr><th>按钮ID</th><th>所属节点</th><th>文字</th><th>类型</th><th>必现</th><th>一次性</th><th>下一节点</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>btn_01</td><td>N001 青云山门</td><td>上前拜见</td><td>普通</td><td>是</td><td>否</td><td>N002</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>btn_02</td><td>N001 青云山门</td><td>默立不语</td><td>普通</td><td>否</td><td>否</td><td>N003</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>btn_03</td><td>N001 青云山门</td><td>递引荐函</td><td>普通</td><td>否</td><td>是</td><td>N002</td><td><button class="btn-text btn">编辑</button></td></tr>
+      <tr><td>btn_10</td><td>N015 灵泉秘境</td><td>灵力转盘</td><td><span class="tag" style="color:var(--q-epic);border-color:var(--q-epic);">小游戏</span></td><td>是</td><td>是</td><td>N016</td><td><button class="btn-text btn">编辑</button></td></tr>
+    </tbody>
+  </table>
+  <div class="divider"><span>按钮配置（四区）</span></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="text-sm text-grey mb-12">基础配置</div>
+      <div class="form-row"><div class="form-label">按钮文字</div><input class="form-input" value="递引荐函"></div>
+      <div class="form-row"><div class="form-label">按钮类型</div><select class="form-select"><option>普通</option><option>小游戏</option></select></div>
+      <div class="form-row"><div class="form-label">必现</div><select class="form-select"><option>是</option><option selected>否</option></select></div>
+      <div class="form-row"><div class="form-label">随机权重</div><input class="form-input" style="max-width:80px;" value="100"></div>
+      <div class="form-row"><div class="form-label">一次性</div><select class="form-select"><option selected>是</option><option>否</option></select></div>
+      <div class="form-row"><div class="form-label">使用后表现</div><select class="form-select"><option>隐藏</option><option selected>禁用</option></select></div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">开启条件（可选）</div>
+      <div class="form-row"><div class="form-label">最低等级</div><input class="form-input" style="max-width:80px;" placeholder="可选"></div>
+      <div class="form-row"><div class="form-label">最高等级</div><input class="form-input" style="max-width:80px;" placeholder="可选"></div>
+      <div class="form-row"><div class="form-label">基础属性条件</div><input class="form-input" placeholder="如 根骨≥30"></div>
+      <div class="form-row"><div class="form-label">特殊属性条件</div><input class="form-input" placeholder="如 气运≥20"></div>
+      <div class="form-row"><div class="form-label">所需剧情道具</div><input class="form-input" placeholder="引用道具ID"></div>
+      <div class="form-row"><div class="form-label">所需遗物</div><input class="form-input" placeholder="引用遗物ID"></div>
+      <div class="form-row"><div class="form-label">CG条件</div><select class="form-select"><option>无</option><option>已获得</option><option>未获得</option></select></div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">点击消耗</div>
+      <div class="form-row"><div class="form-label">消耗灵石</div><input class="form-input" style="max-width:100px;" placeholder="可选"></div>
+      <div class="form-row"><div class="form-label">消耗剧情道具</div><input class="form-input" placeholder="道具ID × 数量"></div>
+    </div>
+    <div class="card">
+      <div class="text-sm text-grey mb-12">点击效果</div>
+      <div class="form-row"><div class="form-label">基础属性变化</div><input class="form-input" placeholder="如 根骨+2"></div>
+      <div class="form-row"><div class="form-label">寿元变化</div><input class="form-input" placeholder="如 -3"></div>
+      <div class="form-row"><div class="form-label">灵石变化</div><input class="form-input" placeholder="如 +50"></div>
+      <div class="form-row"><div class="form-label">遗物变化</div><input class="form-input" placeholder="获得/失去"></div>
+      <div class="form-row"><div class="form-label">解锁CG</div><input class="form-input" placeholder="CG ID"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

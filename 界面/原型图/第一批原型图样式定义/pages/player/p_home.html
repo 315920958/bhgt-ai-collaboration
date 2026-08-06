@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏首页 · 宋式仙册</title>
+<link rel="stylesheet" href="../../design-tokens.css">
+<style>
+  body{padding:28px 36px;}
+  /* 页面内容内层 .page 不再依赖 demo 的 display 切换, 直接显示 */
+  .page{display:block !important;min-height:auto;}
+</style>
+</head>
+<body>
+<div class="page active" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;">
+  <div style="text-align:center;margin-bottom:50px;">
+    <div style="font-family:var(--font-title);font-size:72px;color:var(--ink-black);letter-spacing:12px;line-height:1.2;">仙途问道</div>
+    <div style="font-family:var(--font-sub);font-size:18px;color:var(--bronze-dark);letter-spacing:6px;margin-top:12px;">东 方 修 仙 人 生 模 拟 器</div>
+    <div class="divider mt-20" style="max-width:320px;margin:20px auto;"><span>第 一 卷</span></div>
+  </div>
+  <div class="flex flex-col gap-16" style="width:280px;">
+    <button class="btn btn-primary" style="padding:14px;font-size:18px;">开始新游戏</button>
+    <button class="btn btn-secondary" style="padding:14px;font-size:18px;">继续修行</button>
+    <button class="btn btn-text" style="padding:14px;font-size:16px;">CG 图鉴</button>
+  </div>
+  <div style="position:absolute;bottom:30px;font-size:12px;color:var(--grey);">v0.1 MVP · 宋式仙册</div>
+  <div class="seal" style="position:absolute;top:40px;right:60px;width:56px;height:56px;font-size:18px;">仙</div>
+</div>
+</body>
+</html>

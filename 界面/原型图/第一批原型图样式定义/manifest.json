@@ -1,0 +1,146 @@
+[
+  {
+    "group": "设计系统",
+    "id": "ds",
+    "name": "设计规范总览",
+    "file": "ds.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_home",
+    "name": "游戏首页",
+    "file": "pages/player/p_home.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_talent",
+    "name": "天赋选择",
+    "file": "pages/player/p_talent.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_story",
+    "name": "剧情节点",
+    "file": "pages/player/p_story.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_role",
+    "name": "角色详情",
+    "file": "pages/player/p_role.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_battle",
+    "name": "战斗结果",
+    "file": "pages/player/p_battle.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_shop",
+    "name": "商店",
+    "file": "pages/player/p_shop.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_bag",
+    "name": "背包",
+    "file": "pages/player/p_bag.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_cg",
+    "name": "CG 图鉴",
+    "file": "pages/player/p_cg.html"
+  },
+  {
+    "group": "玩家端 · 核心界面",
+    "id": "p_settle",
+    "name": "本世结算",
+    "file": "pages/player/p_settle.html"
+  },
+  {
+    "group": "玩家端 · 小游戏",
+    "id": "g_wheel",
+    "name": "灵力转盘",
+    "file": "pages/minigame/g_wheel.html"
+  },
+  {
+    "group": "玩家端 · 小游戏",
+    "id": "g_quiz",
+    "name": "悟道问心",
+    "file": "pages/minigame/g_quiz.html"
+  },
+  {
+    "group": "玩家端 · 小游戏",
+    "id": "g_alchemy",
+    "name": "丹药炼制",
+    "file": "pages/minigame/g_alchemy.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_attr",
+    "name": "属性管理",
+    "file": "pages/admin/a_attr.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_talent",
+    "name": "天赋管理",
+    "file": "pages/admin/a_talent.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_realm",
+    "name": "境界管理",
+    "file": "pages/admin/a_realm.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_battle",
+    "name": "战斗评分",
+    "file": "pages/admin/a_battle.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_stage",
+    "name": "大阶段管理",
+    "file": "pages/admin/a_stage.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_node",
+    "name": "节点管理",
+    "file": "pages/admin/a_node.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_btn",
+    "name": "按钮管理",
+    "file": "pages/admin/a_btn.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_item",
+    "name": "物品管理",
+    "file": "pages/admin/a_item.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_shop",
+    "name": "商品管理",
+    "file": "pages/admin/a_shop.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_cg",
+    "name": "CG 管理",
+    "file": "pages/admin/a_cg.html"
+  },
+  {
+    "group": "后台 · 配置管理",
+    "id": "a_ad",
+    "name": "广告管理",
+    "file": "pages/admin/a_ad.html"
+  }
+]
