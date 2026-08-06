@@ -91,8 +91,8 @@
 | `config.nodes` | S2 | 📐 设计前置 | 副本配置（含 buttons 子文档） |
 | `config.minigames` | S5 | ⏳ 占位 | 小游戏配置 |
 | `config.shops` | S2/S3 | ⏳ 占位 | 商店商品 |
-| `config.battles` | S3 | ⏳ 占位 | 战斗评分档位 |
-| `config.cgs` | 待定 | ⏳ 占位 | CG 解锁内容 |
+| `config.battles` | S3 | ✅ 已实现 | 战斗评分档位（`/api/admin/battles`，按 `code` 增删改查） |
+| `config.cgs` | S3 | ✅ 已实现 | CG 解锁内容（`/api/admin/cgs`，按 `code` 增删改查） |
 
 ---
 
@@ -440,7 +440,7 @@ inventory: [{
 
 ```ts
 unlockedCgs: [{
-  cgId: ObjectId,               // FK → config.cgs._id（表未建，字段占位）
+  cgId: ObjectId,               // FK → config.cgs._id（✅ 该表已实现 2026-08-06）
   collectedCount: number,       // 阶段（1, 2, 3...）
   firstCollectedAt: Date,
   lastCollectedAt: Date,
@@ -493,7 +493,7 @@ unlockedCgs: [{
 
 ---
 
-## 7. 占位（待后续 sprint 设计）
+## 7. 配置表补录 / 占位（小游戏 / 商品 待设计；CG / 战斗评分 已实现）
 
 ### 7.1 `config.minigames`（小游戏 · S5）
 转盘 / 答题 / 炼丹三类，结果档位、配方式结果可配。
@@ -501,11 +501,42 @@ unlockedCgs: [{
 ### 7.2 `config.shops`（商品 · S2/S3）
 引用 `config.items._id`（仅 purchasable=true 的）+ 灵石价格 + 上架/重复购买/每世上限。
 
-### 7.3 `config.battles`（战斗评分档位 · S3）
-定义评分阈值 → 档位分值；全局乘数在 `config.game.battleConfig`。
+### 7.3 `config.battles`（战斗评分档位 · ✅ 已实现 2026-08-06）
+定义「血量溢出值」→「评分档位」的阈值映射；全局乘数 `scoreMultiplier` 在 `config.game.battleConfig`。
 
-### 7.4 `config.cgs`（CG 解锁内容 · 待定）
-每张 CG：缩略图 / 原图 / 未解锁占位图 / 回看文字，引用 `game.users.unlockedCgs.cgId`。
+服务端 collection：`config.battles`，按 `code` 增删改查（`/api/admin/battles`，见 admin-api.md §15）。
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是 | 业务主键，全局唯一（索引） |
+| `name` | string | 是 | 档位名称（如「碾压」「险胜」「惜败」） |
+| `minExcess` | number | 否（默认 0） | 血量溢出下限（含），即阈值区间下界 |
+| `maxExcess` | number | 否（默认 -1） | 血量溢出上限（不含）；`-1` 表示无上限 |
+| `score` | number | 否（默认 0） | 该档位对应的评分点数 |
+| `createdAt` | Date | 自动 | Mongoose timestamps |
+| `updatedAt` | Date | 自动 | Mongoose timestamps |
+| `_id` | ObjectId | 自动 | 主键 |
+
+匹配逻辑：战斗结算取 `excess = playerHp - enemyHp`，落入区间 `[minExcess, maxExcess)` 的档位取 `score`；列表按 `minExcess` 升序返回。
+
+### 7.4 `config.cgs`（CG 解锁内容 · ✅ 已实现 2026-08-06）
+每张 CG 的图与回看文字；玩家解锁记录挂在 `game.users.unlockedCgs[]`。
+
+服务端 collection：`config.cgs`，按 `code` 增删改查（`/api/admin/cgs`，见 admin-api.md §14）。
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是 | 业务主键，全局唯一（索引） |
+| `name` | string | 是 | CG 名称 |
+| `thumbnailUrl` | string | 否 | 缩略图 URL（列表 / 卡片用） |
+| `originalUrl` | string | 否 | 原图 URL（详情 / 放大查看） |
+| `placeholderUrl` | string | 否 | 未解锁占位图 URL |
+| `reviewText` | string | 否 | 回看 / 鉴赏文字 |
+| `createdAt` | Date | 自动 | Mongoose timestamps |
+| `updatedAt` | Date | 自动 | Mongoose timestamps |
+| `_id` | ObjectId | 自动 | 主键 |
+
+关联：`game.users.unlockedCgs[].cgId` → `config.cgs._id`（FK，ObjectId 引用对方主键）。
 
 ---
 
@@ -534,7 +565,7 @@ unlockedCgs: [{
 2. **`game.users.inventory[].activeEffects` 中 `sceneKey` 的取值规范**：建议用 `'battle:<nodeId>'` / `'minigame:<minigameId>'` 等命名约定，待 S2/S5 设计时确认。
 3. **`game.users.currentNodeButtonResult` 当前只存 `nodeId`**：是否需要缓存 `rolledButtons` 快照以防配置变更？待 S2 节点服务化时确认。
 4. **`game.users.rebornAt` 字段**：当前设为可选，是否需要保留历史重生时间戳数组（用于后期回放 / 统计）？待 S4 设计时确认。
-5. **每种 CG 的最大阶段数**：当前 `collectedCount` 无限递增，是否需在 `config.cgs` 添加 `maxStage` 字段？待 `config.cgs` 设计时确认。
+5. **每种 CG 的最大阶段数**：当前 `collectedCount` 无限递增。本次实现 `config.cgs` 时**未**加 `maxStage` 字段，维持现状；若后期需限制阶段上限，在 `config.cgs` 增 `maxStage` 字段并在解锁逻辑做封顶即可（待 S2/S5 设计确认）。
 
 ---
 
