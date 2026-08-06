@@ -104,7 +104,7 @@
 |---|---|---|---|---|
 | `_id` | ObjectId | 是 | 是 | Mongo 自动 |
 | `username` | string | 否 | 是（稀疏） | 管理员登录名（如手机号）；仅 `isAdmin=true` 必填 |
-| `password` | string \| null | 否 | 否 | bcryptjs 哈希 |
+| `password` | string \| null | 否 | 否 | SHA1 hex 哈希（无盐） |
 | `isAdmin` | boolean | 是 | 否 | 是否管理员 |
 | `nickname` | string | 是 | 否 | 显示昵称 |
 | `loginCode` | string | 否 | 是（稀疏） | 开发环境万能登录码；正式环境不暴露 `/auth/dev-login` |
@@ -178,6 +178,7 @@
 | `consumablePerUse` | number | consumable | 每次消耗数量，默认 1 |
 | `maxHold` | number | consumable / plot | 最大持有 |
 | `useCondition` | string | consumable | 使用条件（可选） |
+| `lifespan` | number | consumable | 寿元增益（独立字段，不放入 `attributes`；消耗品使用增加的寿元） |
 
 **统一属性效果数组**（relic、consumable 使用；plot = `[]`）：
 
