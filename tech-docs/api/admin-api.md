@@ -27,9 +27,56 @@
 ```
 
 ### 1.2 认证
-- 除 `@Public()` 标注的接口外，**所有路由必须登录**
-- 请求头携带 `Authorization: Bearer <token>`（token 来自登录响应的 `auth` 字段）
-- dev 环境跳过 Token 验证：HTTP 头加 `x-skip-auth: 1`（仅 dev-login 联调时使用）
+
+#### 1.2.1 身份请求头
+
+携带身份信息的请求头名为 **`Authorization`**，固定格式：
+
+```
+Authorization: Bearer <token>
+```
+
+- `<token>` 由服务端用 **AES-256-GCM** 签发（密钥 `AUTH_AES_KEY`），明文为 `{ userId, exp }`。
+- 鉴权**只依赖这个请求头**；本项目不使用 cookie，`credentials` 也未启用，因此跨域不需要 `withCredentials`。
+
+#### 1.2.2 token 从哪来
+
+1. 调登录接口（如 `POST /api/auth/admin-login`），服务端在校验成功后，把加密 token 放在**响应外层**的 `auth` 字段（不是 `MESSAGE_BODY` 里）：
+
+```json
+{
+  "MESSAGE_BODY": { "id": "...", "username": "admin", "nickname": "超管" },
+  "auth": "<AES-256-GCM 加密 token>"
+}
+```
+
+2. 前端在响应拦截器里读取 `envelope.auth` → 存入 `localStorage`。
+3. 之后每次请求，前端请求拦截器自动塞入 `Authorization: Bearer <token>`。
+
+#### 1.2.3 服务端如何校验
+
+服务端 `AuthReadInterceptor` 对**所有接口**都跑（不强制登录，是否强制交给业务拦截器）：
+
+1. 读 `authorization` 头，去掉前缀 `Bearer `（前 7 个字符）得到 token。
+2. `decodeToken` 用 `AUTH_AES_KEY` **AES-256-GCM 解密** → 得到 `{ userId, exp }`。
+3. 校验 `exp`：过期则抛 `TOKEN_EXPIRED(10003)`。
+4. 用 `userId` 查 `sys.users`，命中则把解密后的 token 挂到 `request.auth`、用户对象挂到 `request.user`，供 controller/service 使用。
+5. 无 token / 解密失败：仅置 `request.user = null`，**不抛异常**（是否拦截由 `@Public()` 与强制登录拦截器决定）。
+
+#### 1.2.4 哪些接口免登录
+
+- 标注 `@Public()` 的接口跳过强制登录校验（如 `admin-login` 自身）。
+- 本文档中的后台管理 CRUD（`/api/admin/*` 下的 shops/realms/admins/players 等）**不存在 `@Public()`**，调用前必须先 `admin-login` 拿到 token。
+
+#### 1.2.5 dev 联调跳过鉴权
+
+- 仅 dev / test 环境可用：HTTP 头加 `x-skip-auth: 1`，让接口跳过 token 校验（用于 Postman / 脚本直连调试）。
+- 生产环境（production）此开关无效，必须携带合法 `Authorization`。
+
+#### 1.2.6 跨域
+
+- CORS 已把 `Authorization` 列入允许请求头，跨域带此头不会触发预检拦截。
+- 当前 CORS 策略为反射来源（`origin: true`），即请求来自哪个域名就回显哪个，开发与多域名部署均无需额外配置。
 
 ### 1.3 错误处理
 - 失败响应：`{ MESSAGE_BODY: <msg>, errCode: <number>, auth?, user? }`
