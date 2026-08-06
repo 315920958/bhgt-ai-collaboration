@@ -88,7 +88,7 @@
 | `config.game` | S1 | 🎯 S1 落地 | 全局单例游戏配置 |
 | `config.realms` | S3 | 📐 设计前置 | 境界 |
 | `config.stages` | S2 | 📐 设计前置 | 大阶段 |
-| `config.events` | S2 | ✅ 已实现 | 事件（阶段→事件→节点 中间层，`/api/admin/events`） |
+| `config.nodeBundles` | S2 | ✅ 已实现 | 节点包（阶段→节点包→节点 中间层，`/api/admin/node-bundles`） |
 | `config.nodes` | S2 | 📐 设计前置 | 副本配置（含 buttons 子文档） |
 | `config.minigames` | S5 | ⏳ 占位 | 小游戏配置 |
 | `config.shops` | S2/S3 | ⏳ 占位 | 商店商品 |
@@ -279,28 +279,28 @@ breakthrough: {
 
 > 大阶段 = 第 N 卷（dev-plan §1.1 已确认"阶段即卷"），不单独配置卷名。
 
-### 6.2.1 `config.events`（事件 · ✅ 已实现 2026-08-06）
+### 6.2.1 `config.nodeBundles`（节点包 · ✅ 已实现 2026-08-06）
 
-介于「大阶段」与「剧情节点」之间的中间层，三层结构：**大阶段(stage) → 事件(event) → 剧情节点(node)**。
+介于「大阶段」与「剧情节点」之间的中间层，三层结构：**大阶段(stage) → 节点包(nodeBundle) → 剧情节点(node)**。
 
-服务端 collection：`config.events`，按 `code` 增删改查（`/api/admin/events`，见 admin-api.md §16）。
+服务端 collection：`config.nodeBundles`，按 `code` 增删改查（`/api/admin/node-bundles`，见 admin-api.md §16）。
 
 | 字段 | 类型 | 必填 | 唯一 | 说明 |
 |---|---|---|---|---|
 | `_id` | ObjectId | 是 | 是 | 主键 |
-| `code` | string | 是 | 是 | 事件业务标识（如 `ev_world_01`） |
-| `name` | string | 是 | 否 | 事件名称 |
+| `code` | string | 是 | 是 | 节点包业务标识（如 `nb_world_01`） |
+| `name` | string | 是 | 否 | 节点包名称 |
 | `stageId` | ObjectId | 否 | 否 | FK → `config.stages._id`（所属大阶段） |
-| `description` | string | 否 | 否 | 事件描述 |
+| `description` | string | 否 | 否 | 节点包描述 |
 | `positionX` | number | 否 | 否 | 图形编辑器 X 坐标（默认 0） |
 | `positionY` | number | 否 | 否 | 图形编辑器 Y 坐标（默认 0） |
-| `entryNodeRef` | string | 否 | 否 | 事件入口节点引用 → `config.nodes.referenceId`（单一出发点） |
-| `exitNodeRef` | string | 否 | 否 | 事件出口节点引用 → `config.nodes.referenceId`（单一终点） |
-| `nextEventId` | ObjectId | 否 | 否 | FK → `config.events._id`（世界路径图中后继事件，单链接） |
+| `entryNodeRef` | string | 否 | 否 | 节点包入口节点引用 → `config.nodes.referenceId`（单一出发点） |
+| `exitNodeRef` | string | 否 | 否 | 节点包出口节点引用 → `config.nodes.referenceId`（单一终点） |
+| `nextNodeBundleId` | ObjectId | 否 | 否 | FK → `config.nodeBundles._id`（世界路径图中后继节点包，单链接） |
 | `createdAt` | Date | 自动 | — | Mongoose timestamps |
 | `updatedAt` | Date | 自动 | — | Mongoose timestamps |
 
-> 「殊途同归」：事件内部一组节点，仅一个 `entryNodeRef` 入口、一个 `exitNodeRef` 出口，中间可分支。图形（路径）编辑器中，事件是地图上的一个图形节点，`positionX/Y` 摆放位置，`nextEventId` 串成世界路径。
+> 「殊途同归」：节点包内部一组节点，仅一个 `entryNodeRef` 入口、一个 `exitNodeRef` 出口，中间可分支。图形（路径）编辑器中，节点包是地图上的一个图形节点，`positionX/Y` 摆放位置，`nextNodeBundleId` 串成世界路径。
 
 ### 6.3 `config.nodes`（副本配置 · 含 buttons 子文档）
 
@@ -309,9 +309,9 @@ breakthrough: {
   _id: ObjectId,
   code: string,
   name: string,
-  stageId: ObjectId,              // FK → config.stages._id（指定 eventId 时由事件自动派生）
-  eventId: ObjectId,              // FK → config.events._id（节点隶属于事件）
-  referenceId: string,            // 引用 ID（唯一·稀疏索引）：按钮/事件入口出口引用此值，跨事件连边
+  stageId: ObjectId,              // FK → config.stages._id（指定 nodeBundleId 时由节点包自动派生）
+  nodeBundleId: ObjectId,         // FK → config.nodeBundles._id（节点隶属于节点包）
+  referenceId: string,            // 引用 ID（唯一·稀疏索引）：按钮/节点包入口出口引用此值，跨节点包连边
   title: string,
   text: string,
   imageUrl?: string,
