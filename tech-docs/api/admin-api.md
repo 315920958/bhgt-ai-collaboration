@@ -1046,13 +1046,65 @@ POST /api/admin/nodes
   "isBattle": false,
   "buttonCount": 3,
   "buttons": [
-    { "code": "b_enter", "text": "叩响山门", "weight": 1, "nextNodeId": "66...（下一节点 _id）" },
-    { "code": "b_peek", "text": "暗中观察", "type": "normal", "effects": { "spiritStone": -5 } }
+    {
+      "code": "b_enter",
+      "text": "叩响山门",
+      "weight": 1,
+      "conditions": { "minSpiritStone": 10 },
+      "effects": { "spiritStone": -5, "attributes": { "rootBone": 1 } },
+      "nextNodeId": "66...（下一节点 _id）"
+    },
+    {
+      "code": "b_peek",
+      "text": "暗中观察",
+      "type": "normal",
+      "costs": { "items": [{ "itemId": "66...（道具 _id）", "count": 1 }] },
+      "effects": { "spiritStone": 8, "cg": ["66...（CG _id）"] }
+    }
   ]
 }
 ```
 
 返回：新建的节点文档。错误：`10001 PARAM_INVALID`（code / name / title 缺失或 code 重复）。
+
+#### 13.3.1 按钮 `conditions` / `costs` / `effects` 结构约定
+
+这三个字段服务端**原样存储（`object`，不做任何校验）**，由游戏引擎在运行时按下列键名解析。
+后台节点按钮编辑器中以 JSON 文本录入，须保证为合法 JSON；非法 JSON 会被服务端透传存储、客户端解析时报错。
+
+**`costs`（选择/出现所需消耗）**
+
+| 键 | 类型 | 说明 |
+|---|---|---|
+| `spiritStone` | number | 消耗灵石（正值，如 `5`） |
+| `lifespan` | number | 消耗寿元（正值） |
+| `items` | array | 消耗道具：`[{ "itemId": "config.items._id", "count": 1 }]` |
+
+**`effects`（选择后产生的效果）**
+
+| 键 | 类型 | 说明 |
+|---|---|---|
+| `spiritStone` | number | 灵石变化（正加负减） |
+| `lifespan` | number | 寿元变化（正加负减） |
+| `attributes` | object | 属性增减：`{ "<attributeId 或属性 key>": delta }` |
+| `items` | array | 发放道具：`[{ "itemId": "config.items._id", "count": 1 }]` |
+| `cg` | array | 解锁 CG：`["config.cg._id", ...]` |
+| `talentPoints` | number | 天赋点变化（局外成长，如启用） |
+
+**`conditions`（按钮出现的准入条件，全部满足才出现）**
+
+| 键 | 类型 | 说明 |
+|---|---|---|
+| `minSpiritStone` | number | 灵石下限 |
+| `minLifespan` | number | 寿元下限 |
+| `minLevel` | number | 修为/境界等级下限 |
+| `attrAtLeast` | object | 属性门槛：`{ "<attributeId 或 key>": value }` |
+| `hasItems` | array | 需持有道具：`[{ "itemId": "config.items._id", "count": 1 }]` |
+| `hasRelics` | array | 需持有遗物：`["config.items._id", ...]` |
+| `hasCg` | array | 需已解锁 CG：`["config.cg._id", ...]` |
+
+> 引用类字段（`itemId` / `attributeId` / `cg` / `relic`）均填对应配置表的 `_id`（ObjectId 字符串，如 `507f1f77bcf86cd799439011`）。
+> 上述键名为当前约定，引擎未识别的键会被忽略；后续扩展新键时请同步更新本节。
 
 ### 13.4 更新节点
 
@@ -1061,6 +1113,8 @@ PUT /api/admin/nodes/:code
 ```
 
 字段同 13.3，全部可选（缺省字段不更新）。`stageId` 传空串视为解绑。不存在 → `10007 NOT_FOUND`。
+
+> 注意：`buttons` 若提供则**整体替换**该节点的按钮数组（非逐项合并），需传入完整按钮列表；不传则保留原按钮不变。
 
 ### 13.5 删除节点
 
