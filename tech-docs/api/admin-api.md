@@ -766,6 +766,12 @@ PUT /api/admin/game-config
 | POST | `/api/admin/nodes` | 新增节点 |
 | PUT | `/api/admin/nodes/:code` | 更新节点 |
 | DELETE | `/api/admin/nodes/:code` | 删除节点 |
+| **事件** | | |
+| GET | `/api/admin/events` | 事件列表（可按 `stageId` 过滤） |
+| GET | `/api/admin/events/:code` | 事件详情 |
+| POST | `/api/admin/events` | 新增事件 |
+| PUT | `/api/admin/events/:code` | 更新事件 |
+| DELETE | `/api/admin/events/:code` | 删除事件 |
 
 ---
 
@@ -1177,3 +1183,53 @@ DELETE /api/admin/battles/:code        # 删除，不存在 → 10007
 错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
 
 > 全局评分乘数（所有档位分值统一乘）由 `config.game.battleConfig.scoreMultiplier` 控制，前端在「战斗评分配置」页的全局乘数卡片中编辑（见 `GAME_CONFIG_UPDATE`）。
+
+## 16. 事件（config.events）
+
+> 事件介于「大阶段」与「剧情节点」之间，是**三层结构**的中间层：**大阶段(stage) → 事件(event) → 剧情节点(node)**。
+> 一个事件隶属一个阶段，内部是一组「殊途同归」的剧情节点：单一入口（`entryNodeRef`）+ 单一出口（`exitNodeRef`），中间可有若干分支。
+> 在将来的图形（路径）编辑器里，事件是世界地图上的一个个图形节点，通过 `nextEventId` 串成路径；`positionX/Y` 供编辑器摆放。
+> 业务主键 `code`（如 `ev_world_01`），路径统一用 `code`。
+
+### 16.1 列表 / 详情 / 增 / 改 / 删
+
+```
+GET    /api/admin/events              # 列表，支持 ?stageId= 过滤，按 code 升序
+GET    /api/admin/events/:code        # 详情，不存在 → 10007
+POST   /api/admin/events              # 新增
+PUT    /api/admin/events/:code        # 更新（字段可选，缺省不更新）
+DELETE /api/admin/events/:code        # 删除，不存在 → 10007
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `code` | string | 是(建) | 事件业务标识，唯一 |
+| `name` | string | 是(建) | 事件名称 |
+| `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定） |
+| `description` | string | 否 | 事件描述，默认 `''` |
+| `positionX` | number | 否 | 图形编辑器 X 坐标，默认 `0` |
+| `positionY` | number | 否 | 图形编辑器 Y 坐标，默认 `0` |
+| `entryNodeRef` | string | 否 | 事件入口节点引用 → `config.nodes.referenceId`（单一出发点）；默认 `''` |
+| `exitNodeRef` | string | 否 | 事件出口节点引用 → `config.nodes.referenceId`（单一终点）；默认 `''` |
+| `nextEventId` | string | 否 | 世界路径图中后继事件 `config.events._id`（单链接）；空串视为不绑定 |
+
+请求示例：
+
+```json
+{
+  "code": "ev_world_01",
+  "name": "初入青云",
+  "stageId": "66...（某 stage _id）",
+  "description": "主角初到青云宗外门",
+  "positionX": 120,
+  "positionY": 80,
+  "entryNodeRef": "ref_a1b2c3d4",
+  "exitNodeRef": "ref_e5f6a7b8",
+  "nextEventId": "66...（下一事件 _id）"
+}
+```
+
+错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
+
+> **节点与事件的归属关系**：节点通过 `eventId` 隶属事件（见 §13.3 字段表），指定 `eventId` 时其 `stageId` 由事件自动派生。事件入口/出口（`entryNodeRef`/`exitNodeRef`）与按钮 `nextNodeId` 均引用节点的 `referenceId`，因此可跨事件连边（出口节点的按钮 `nextNodeId` 指向下一事件的入口节点 `referenceId`）。
+> 删除事件**不会**自动清理其他事件对其 `nextEventId`、以及节点对其 `entryNodeRef`/`exitNodeRef` 的引用，需后台自行维护（同 §13 节点删除的注意事项）。
