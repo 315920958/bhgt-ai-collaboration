@@ -1,0 +1,16 @@
+{
+  "name": "bhgt-ai-collaboration-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BHGT 协作仓库脚本（OSS 图片上传等）",
+  "scripts": {
+    "upload-oss": "node upload-images-to-oss.mjs"
+  },
+  "dependencies": {
+    "ali-oss": "^6.22.0",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "pinyin-pro": "^3.25.0"
+  }
+}

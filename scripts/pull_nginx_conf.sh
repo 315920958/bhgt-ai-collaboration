@@ -2,7 +2,7 @@
 #
 # 一键把线上服务器的 Nginx 配置「拉」到本地。
 #
-# 只同步三项：nginx.conf、conf.d/、ssl_files/
+# 同步四项：nginx.conf、conf.d/、ssl_files/、sites-available/
 # 落到本地 nginx_conf/ 目录下，文件名 / 目录结构与服务器一致。
 #
 # 用法：
@@ -26,5 +26,6 @@ echo "==> 拉取 Nginx 配置：$REMOTE_USER_HOST -> $DST/"
 scp -p $SSH_OPTS "$REMOTE_USER_HOST:/etc/nginx/nginx.conf" "$DST/"
 scp -r -p $SSH_OPTS "$REMOTE_USER_HOST:/etc/nginx/conf.d/." "$DST/conf.d/"
 scp -r -p $SSH_OPTS "$REMOTE_USER_HOST:/etc/nginx/ssl_files/." "$DST/ssl_files/" 2>/dev/null || true
+scp -r -p $SSH_OPTS "$REMOTE_USER_HOST:/etc/nginx/sites-available/." "$DST/sites-available/" 2>/dev/null || true
 
 echo "==> 完成。本地配置位于：$DST"
