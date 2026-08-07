@@ -8,10 +8,10 @@
  *
  * 规则:
  *   1. 遍历目录下图片；中文名转拼音作为 OSS 对象名（不含中文保持原名）。
+ *      目录层级保留，每段各自转拼音，例如 风景/北京/莲池湖.jpg -> fengjing/beijing/lianchihu.jpg。
  *   2. 上传后写同名 .sha1.txt（写到原图同目录）。
- *   3. 维护固定 Excel: oss-image-manifest.xlsx（localName | ossName | sha1 | uploadedAt），仅新增补行。
- *   4. 线上同名且 SHA1 一致 -> 忽略（不传、不改 Excel）。
- *   5. 线上同名但 SHA1 不一致 -> 覆盖上传，但不改 Excel。
+ *   3. 线上同名且 SHA1 一致 -> 忽略（不传）。
+ *   4. 线上同名但 SHA1 不一致 -> 覆盖上传。
  *   SHA1 同时写入 OSS 对象元数据 x-oss-meta-sha1，供比对。
  */
 
@@ -24,7 +24,6 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const dotenv = require('dotenv');
 const OSS = require('ali-oss');
-const ExcelJS = require('exceljs');
 // pinyin-pro 为 ESM 包，用动态 import 加载
 const { pinyin } = await import('pinyin-pro');
 
@@ -35,7 +34,6 @@ const IMAGE_EXT = new Set([
   '.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.ico', '.tiff', '.heic', '.avif',
 ]);
 const SHA1_SUFFIX = '.sha1.txt';
-const EXCEL_PATH = path.resolve(__dirname, '../oss-image-manifest.xlsx');
 const DEFAULT_ENV = path.resolve(__dirname, '../../bhgt-server/.env.test');
 
 // ---------- 解析参数 ----------
@@ -84,7 +82,7 @@ function toOssSegment(seg) {
   return py + ext;
 }
 
-// 相对路径整体转拼音（保留目录层级）
+// 相对路径整体转拼音；保留目录层级（风景/北京/莲池湖.jpg -> fengjing/beijing/lianchihu.jpg）
 function toOssName(rel) {
   return rel.split('/').map(toOssSegment).join('/');
 }
@@ -129,34 +127,6 @@ function writeSha1Txt(localPath, sha1) {
   fs.writeFileSync(localPath + SHA1_SUFFIX, sha1 + '\n');
 }
 
-// ---------- Excel ----------
-async function loadManifest() {
-  const wb = new ExcelJS.Workbook();
-  let ws;
-  if (fs.existsSync(EXCEL_PATH)) {
-    await wb.xlsx.readFile(EXCEL_PATH);
-    ws = wb.getWorksheet('images');
-  }
-  if (!ws) {
-    ws = wb.addWorksheet('images');
-    // 仅设列宽，避免列定义自动生成表头导致与下方 addRow 表头重复
-    ws.columns = [
-      { width: 40 },
-      { width: 40 },
-      { width: 45 },
-      { width: 28 },
-    ];
-    ws.addRow(['localName', 'ossName', 'sha1', 'uploadedAt']);
-  }
-  const existing = new Map();
-  ws.eachRow((row, n) => {
-    if (n === 1) return;
-    const v = row.getCell(1).value;
-    if (v) existing.set(String(v), row);
-  });
-  return { wb, ws, existing };
-}
-
 // ---------- 主流程 ----------
 async function main() {
   const { dir, opts } = parseArgs(process.argv.slice(2));
@@ -197,9 +167,6 @@ async function main() {
     return;
   }
 
-  const { wb, ws, existing } = await loadManifest();
-  const now = new Date().toISOString();
-
   const stat = { uploaded: 0, overwritten: 0, ignored: 0 };
 
   for (const full of files) {
@@ -224,15 +191,7 @@ async function main() {
     writeSha1Txt(full, sha1);
 
     if (action === 'upload-new') {
-      if (existing.has(rel)) {
-        const row = existing.get(rel);
-        row.getCell(3).value = sha1;
-        row.getCell(4).value = now;
-      } else {
-        ws.addRow([rel, ossName, sha1, now]);
-        existing.set(rel, ws.lastRow);
-      }
-      console.log(`  UPLOAD+LOG: ${rel} -> ${ossName}`);
+      console.log(`  UPLOAD: ${rel} -> ${ossName}`);
       stat.uploaded++;
     } else {
       console.log(`  OVERWRITE (sha1 不一致): ${rel} -> ${ossName}`);
@@ -240,10 +199,8 @@ async function main() {
     }
   }
 
-  await wb.xlsx.writeFile(EXCEL_PATH);
   console.log('----------------------------------------');
   console.log(`完成: 新增 ${stat.uploaded} | 覆盖 ${stat.overwritten} | 忽略 ${stat.ignored}`);
-  console.log(`Excel 已更新: ${EXCEL_PATH}`);
 }
 
 main().catch((e) => {
