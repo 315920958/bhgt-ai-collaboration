@@ -7,8 +7,8 @@
 
 | 字段 | 值 |
 |---|---|
-| AccessKey ID | 见 `bhgt-server/.env.*` 的 `OSS_ACCESS_KEY_ID`（团队共享，明文入库）|
-| AccessKey Secret | 见 `bhgt-server/.env.*` 的 `OSS_ACCESS_KEY_SECRET`（团队共享，明文入库；仅服务端使用）|
+| AccessKey ID | `LTAI5tAHKRU7xm74Spht8KC9` |
+| AccessKey Secret | `Tma5Gtq8hctLxs10dLwTNRpLfG6CKw` |
 | RAM 用户权限 | `AliyunOSSFullAccess`（子用户，非主账号）|
 
 ## 二、Bucket 信息
@@ -34,9 +34,8 @@
 ## 四、服务端环境变量（已写入 `bhgt-server/.env.*`）
 
 ```bash
-# 以下两行的值见各 .env.*（团队共享、明文入库），此处不重复粘贴明文以防被密钥扫描拦截
-OSS_ACCESS_KEY_ID=<团队共享值，见 bhgt-server/.env.*>
-OSS_ACCESS_KEY_SECRET=<团队共享值，见 bhgt-server/.env.*>
+OSS_ACCESS_KEY_ID=LTAI5tAHKRU7xm74Spht8KC9
+OSS_ACCESS_KEY_SECRET=Tma5Gtq8hctLxs10dLwTNRpLfG6CKw
 OSS_BUCKET=bhgt-public-files
 OSS_REGION=oss-cn-beijing
 OSS_ENDPOINT=https://oss-cn-beijing.aliyuncs.com
@@ -64,11 +63,10 @@ node scripts/upload-images-to-oss.mjs <图片目录> [--env <env文件路径>] [
 1. **遍历目录**下所有图片（扩展名：jpg/jpeg/png/gif/webp/bmp/svg/ico/tiff/heic/avif）。
 2. **中文名转拼音**：文件名含中文时，转成汉语拼音（无声调、小写），作为 OSS 上的对象名；不含中文则保持原名。递归模式下目录结构也同步转拼音。
 3. **上传后写 SHA1**：每张成功上传的图片，在其**同目录、同名**位置写一个 `<图片名>.sha1.txt`，内容为文件 SHA1 值。
-4. **维护固定 Excel**：`oss-image-manifest.xlsx`（仓库根）长期维护，列：`localName`（原相对路径）｜ `ossName`（OSS 对象名）｜ `sha1` ｜ `uploadedAt`。仅**新增上传**才补行。
-5. **忽略规则**：
-   - 转换文件名后，**线上已存在同名对象且 SHA1 一致** → 跳过，不传、不改 Excel。
-   - 转换文件名后，**线上已存在同名对象但 SHA1 不一致** → **覆盖上传**，但**不修改 Excel 记录**。
-6. SHA1 同时写入 OSS 对象元数据 `x-oss-meta-sha1`，供后续比对线上文件是否被改过。
+4. **忽略 / 覆盖规则**（幂等靠 OSS 对象元数据 `x-oss-meta-sha1` 判定，不依赖本地清单）：
+   - 转换文件名后，**线上已存在同名对象且 SHA1 一致** → 跳过，不传。
+   - 转换文件名后，**线上已存在同名对象但 SHA1 不一致** → **覆盖上传**。
+5. SHA1 同时写入 OSS 对象元数据 `x-oss-meta-sha1`，供后续比对线上文件是否被改过。
 
 ### 设计决策（可改）
 
