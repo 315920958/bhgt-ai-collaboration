@@ -1,7 +1,7 @@
 # TapTap H5 接入分析（BHGT）
 
 > 目标：把肉鸽修仙剧情 H5 小游戏 BHGT 上架 TapTap。
-> 当前状态：尚未注册 / 认证开发者（2026-08-04 起进入调研与准备阶段）。
+> 当前状态：**开发者已认证，TapTap 凭据已下发并配置（2026-08-07）**。
 > 本文结论基于 TapTap 官方开发者文档 + 小游戏 API 文档 + 快速上架公告 + 防沉迷规范核对，并经用户拍板。
 
 ---
@@ -109,12 +109,34 @@ B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所�
 
 ---
 
-## 6. 开发者认证（用户自行办理）
+## 6. 开发者认证与凭据（已下发 · 2026-08-07）
 
 - 注册开发者（免审，功能受限）/ 认证开发者（约 2 工作日；个人主体=身份证，企业主体=营业执照）。
 - 快速上架可"无需等待认证审核"先发 H5，但正式能力 / 财务仍要认证开发者身份。
-- 拿到 **appid / clientId** 后，填入 TapSDK 初始化（早起初始化，如 `App.tsx` 的 `useEffect`）。
-- 当前由用户本人推进，有消息再同步；AI 侧暂不介入。
+- **2026-08-07 凭据已下发，并已写入各仓库 `.env.*`（见 §6.1）。客户端用 `VITE_TAPTAP_CLIENT_ID` 拼授权地址拿 `code`；服务端用 `TAPTAP_CLIENT_ID` + `TAPTAP_SERVER_SECRET` 在服务端换 `openid`。**
+
+### 6.1 凭据与存储约定（重要）
+
+**团队共享策略（用户拍板，2026-08-07）**：本团队为小团队开发，**所有代码与配置信息（含第三方密钥）对团队全员共享、可入库**。因此：
+
+- 所有 `.env.*`（含 server `.env.production` 生产密钥）**均进 git 跟踪、明文留存**，不忽略任何 env 文件。
+- TapTap **不分环境**（dev/test/prod 同一套凭据），故各环境 `.env.*` 写入**完全相同**的凭据，无需按环境区分。
+- `TAPTAP_SERVER_SECRET` / `TAPTAP_CLIENT_PUBLIC_KEY` **仅服务端读取，绝不进入前端构建产物**；`TAPTAP_CLIENT_ID` 为公开标识，前端经 `VITE_TAPTAP_CLIENT_ID` 注入包内（公开，安全）。
+
+**环境变量映射**
+
+| env 变量 | 值 | 存放位置 | 说明 |
+|---|---|---|---|
+| `TAPTAP_CLIENT_ID` | `uhgnomb86qttlu987a` | server 全环境 | 公开 client_id，授权地址与换 token 都用它 |
+| `TAPTAP_CLIENT_TOKEN` | `i3vMUFmnyYlVaj9ZfmOhogBa8FiYWp2z3pvRkSBG` | server 全环境 | client_token（client-credentials 类调用 / 开放 API 用，当前登录流暂未用） |
+| `TAPTAP_SERVER_SECRET` | `vRvGl51esrL0yt8qA1bcSNI9Ey4gRkMs` | server 全环境，**仅服务端** | code→token 服务端交换的 client_secret |
+| `TAPTAP_CLIENT_PUBLIC_KEY` | `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArzoz1pVURjgwdhfw6kc7sDjMdsFmy6oVtuwlKwVLZiSjrbuWhKU6abaU2q2HqtSz79aGEWsjEgKxB3ZBQgAwXOOaorb6M+Gy0EEwpWySJPv9PcuhaGv543ClFgNtIxv1eb9pHNALXUZV3GZJrXb+0NQ0BxUVfKzqywO21DYv4E9Fnng2kn5phlKCWrA9J8l8laXo6mu2TFdMQmc8T+Cn+pJ5FQPo0YiQh2q1biQ973Mfxqye+AzA0iGXsdVI6kKrCii5YEhWlF1KKhpf3ilzL+kT5keIx82y12sjM5J3b5lWXoS89sD0kxuq7u+yZ6cKud0CWjIiz2EfXPG8tskD7QIDAQAB` | server 全环境，**仅服务端** | RSA 公钥，用于校验 TapTap 回传数据签名（如 mac_token / webhook） |
+| `TAPTAP_REDIRECT_URI` | `https://player.bhgt.sixonehub.site/auth/callback` | server 全环境 | 授权回调地址，**必须与 TapTap 开发者中心登记的回调完全一致**（含协议/路径） |
+| `VITE_TAPTAP_CLIENT_ID` | `uhgnomb86qttlu987a` | h5 全环境 | 前端公开 client_id，构建时注入包内 |
+
+**实现状态**：`bhgt-server` `AuthService.taptapLogin` 已由占位升级为真实调用（`callTapTapToken` → `POST https://connect.tapapis.cn/token`，用 client_id+client_secret+code 换 openid/unionid）。仅生产态（或 `AUTH_MODE=taptap`）走此链路；dev 仍走 dev-login。
+
+> 待办：回调地址 `TAPTAP_REDIRECT_URI` 需在 TapTap 开发者中心登记；Client Token / Public Key 的用途（client-credentials 开放 API、签名校验）后续按需接入。
 
 ---
 
