@@ -761,14 +761,16 @@ PUT /api/admin/game-config
 | GET | `/api/admin/players` | 玩家（游戏角色）列表 |
 | POST | `/api/admin/players/test` | 增加测试玩家 |
 | **剧情节点** | | |
-| GET | `/api/admin/nodes` | 节点列表（可按 `stageId` / `isBattle` 过滤） |
+| GET | `/api/admin/nodes` | 节点列表（可按 `stageId` / `isBattle` / `nodeBundleId` 过滤） |
 | GET | `/api/admin/nodes/:code` | 节点详情 |
 | POST | `/api/admin/nodes` | 新增节点 |
 | PUT | `/api/admin/nodes/:code` | 更新节点 |
 | DELETE | `/api/admin/nodes/:code` | 删除节点 |
 | **节点包** | | |
 | GET | `/api/admin/node-bundles` | 节点包列表（可按 `stageId` 过滤） |
+| GET | `/api/admin/node-bundles/graph` | 事件级路径图（各事件入口/出口/跨事件边） |
 | GET | `/api/admin/node-bundles/:code` | 节点包详情 |
+| GET | `/api/admin/node-bundles/:code/nodes` | 单事件内节点连接图 |
 | POST | `/api/admin/node-bundles` | 新增节点包 |
 | PUT | `/api/admin/node-bundles/:code` | 更新节点包 |
 | DELETE | `/api/admin/node-bundles/:code` | 删除节点包 |
@@ -993,6 +995,7 @@ GET /api/admin/nodes?stageId=<可选>&isBattle=<可选 1|true|0|false>
 
 - `stageId`：按所属大阶段过滤（传 `config.stages._id`）。
 - `isBattle`：传 `1` / `true` 只返回战斗节点；传 `0` / `false` 只返回非战斗节点。
+- `nodeBundleId`：按所属节点包过滤（传 `config.nodeBundles._id`）。
 - 返回：节点数组（按 `code` 升序）。
 
 ### 13.2 节点详情
@@ -1016,7 +1019,6 @@ POST /api/admin/nodes
 | `title` | string | 是 | 玩家可见节点标题 |
 | `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定）。若同时提供 `nodeBundleId`，以节点包所属阶段为准自动派生，无需重复传 |
 | `nodeBundleId` | string | 否 | 所属节点包 `config.nodeBundles._id`；节点隶属于节点包，节点包隶属于阶段 |
-| `referenceId` | string | 否 | 引用 ID：按钮 `nextNodeId` 与节点包 `entryNodeRef`/`exitNodeRef` 引用的稳定标识；不提供则自动生成 `ref_<随机>`，全局唯一 |
 | `text` | string | 否 | 节点正文，默认 `''` |
 | `imageUrl` | string | 否 | 配图，默认 `''` |
 | `isBattle` | boolean | 否 | 是否战斗节点，默认 false |
@@ -1038,7 +1040,7 @@ POST /api/admin/nodes
 | `conditions` | object | 出现条件（灵活） |
 | `costs` | object | 消耗（灵石/道具，灵活） |
 | `effects` | object | 选择后效果（灵活） |
-| `nextNodeId` | string | 跳转到的下一节点 `referenceId`（见节点 `referenceId`；可跨节点包引用下一节点包的入口节点） |
+| `nextNodeId` | string | 跳转到的下一节点 `code`（如 `n002`）；按 code 互引，可跨节点包引用下一节点包的入口节点 |
 
 请求示例：
 
@@ -1058,7 +1060,7 @@ POST /api/admin/nodes
       "weight": 1,
       "conditions": { "minSpiritStone": 10 },
       "effects": { "spiritStone": -5, "attributes": { "rootBone": 1 } },
-      "nextNodeId": "ref_xxxx（下一节点 referenceId，可跨节点包）"
+      "nextNodeId": "n002（下一节点 code，可跨节点包）"
     },
     {
       "code": "b_peek",
@@ -1072,6 +1074,8 @@ POST /api/admin/nodes
 ```
 
 返回：新建的节点文档。错误：`10001 PARAM_INVALID`（code / name / title 缺失或 code 重复）。
+
+> **`code` 允许编辑**：节点的 `code` 与所属节点包的 `code` 均可在更新时修改（PUT 传新 `code`，服务端校验全局唯一，见 §13.4 / §16.1）。迁移脚本 `scripts/migrate-node-refs.ts` 已把库中所有 `referenceId` 与按钮里的 `_id`/`ref_xxx` 引用改写为 `code`，按钮 `nextNodeId` 直接填目标节点 `code`。
 
 #### 13.3.1 按钮 `conditions` / `costs` / `effects` 结构约定
 
@@ -1130,7 +1134,7 @@ DELETE /api/admin/nodes/:code
 
 返回 `{ "success": true }`。不存在 → `10007 NOT_FOUND`。
 
-> 注意：节点间靠 `buttons[].nextNodeId` / `battleConfig.success.nextNodeIds` 串成剧情图，删除节点不会自动清理其他节点对其的引用，需后台自行维护。
+> 注意：节点间剧情图**只看按钮 `buttons[].nextNodeId`** 串接；战斗结果 `battleConfig.success/failure` 的 `nextNodeIds` 是战斗结算后的跳转，**不参与**「节点指向 / 事件入口出口 / 事件间边」的计算。删除节点不会自动清理其他节点按钮对其 `nextNodeId` 的引用，需后台自行维护。
 
 ## 14. CG 图鉴（config.cgs）
 
@@ -1184,18 +1188,19 @@ DELETE /api/admin/battles/:code        # 删除，不存在 → 10007
 
 > 全局评分乘数（所有档位分值统一乘）由 `config.game.battleConfig.scoreMultiplier` 控制，前端在「战斗评分配置」页的全局乘数卡片中编辑（见 `GAME_CONFIG_UPDATE`）。
 
-## 16. 节点包（config.nodeBundles）
+## 16. 节点包（config.nodeBundles）· admin 界面称「事件」
 
 > 节点包介于「大阶段」与「剧情节点」之间，是**三层结构**的中间层：**大阶段(stage) → 节点包(nodeBundle) → 剧情节点(node)**。
-> 一个节点包隶属一个阶段，内部是一组「殊途同归」的剧情节点：单一入口（`entryNodeRef`）+ 单一出口（`exitNodeRef`），中间可有若干分支。
-> 在将来的图形（路径）编辑器里，节点包是世界地图上的一个个图形节点，通过 `nextNodeBundleId` 串成路径；`positionX/Y` 供编辑器摆放。
+> ⚠️ **双层命名**：代码 / 数据层一律称「节点包(nodeBundle)」；**admin 用户可见文案统一显示「事件」**（菜单、标题、按钮、列名、弹窗、表单标签均写「事件」），仅为展示别名，代码标识符不变。
 > 业务主键 `code`（如 `nb_world_01`），路径统一用 `code`。
 
 ### 16.1 列表 / 详情 / 增 / 改 / 删
 
 ```
 GET    /api/admin/node-bundles              # 列表，支持 ?stageId= 过滤，按 code 升序
+GET    /api/admin/node-bundles/graph        # 事件级路径图（见 §16.2）
 GET    /api/admin/node-bundles/:code        # 详情，不存在 → 10007
+GET    /api/admin/node-bundles/:code/nodes  # 单事件内节点连接图（见 §16.2）
 POST   /api/admin/node-bundles              # 新增
 PUT    /api/admin/node-bundles/:code        # 更新（字段可选，缺省不更新）
 DELETE /api/admin/node-bundles/:code        # 删除，不存在 → 10007
@@ -1203,33 +1208,95 @@ DELETE /api/admin/node-bundles/:code        # 删除，不存在 → 10007
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `code` | string | 是(建) | 节点包业务标识，唯一 |
-| `name` | string | 是(建) | 节点包名称 |
+| `code` | string | 是(建) | 节点包业务标识，唯一。**允许编辑**：更新时传新 `code`，服务端校验全局唯一（与旧值相同则不校验） |
+| `name` | string | 是(建) | 节点包名称（界面显示「事件名称」） |
 | `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定） |
 | `description` | string | 否 | 节点包描述，默认 `''` |
-| `positionX` | number | 否 | 图形编辑器 X 坐标，默认 `0` |
-| `positionY` | number | 否 | 图形编辑器 Y 坐标，默认 `0` |
-| `entryNodeRef` | string | 否 | 节点包入口节点引用 → `config.nodes.referenceId`（单一出发点）；默认 `''` |
-| `exitNodeRef` | string | 否 | 节点包出口节点引用 → `config.nodes.referenceId`（单一终点）；默认 `''` |
-| `nextNodeBundleId` | string | 否 | 世界路径图中后继节点包 `config.nodeBundles._id`（单链接）；空串视为不绑定 |
 
-请求示例：
+> 已删除字段（2026-08-06）：`positionX` / `positionY` / `entryNodeRef` / `exitNodeRef` / `nextNodeBundleId` 全部移除，图形坐标由前端画图时自行计算，不入库。
+
+请求示例（新增）：
 
 ```json
 {
-  "code": "ev_world_01",
+  "code": "nb_world_01",
   "name": "初入青云",
   "stageId": "66...（某 stage _id）",
-  "description": "主角初到青云宗外门",
-  "positionX": 120,
-  "positionY": 80,
-  "entryNodeRef": "ref_a1b2c3d4",
-  "exitNodeRef": "ref_e5f6a7b8",
-  "nextNodeBundleId": "66...（下一节点包 _id）"
+  "description": "主角初到青云宗外门"
 }
 ```
 
 错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
 
-> **节点与节点包的归属关系**：节点通过 `nodeBundleId` 隶属节点包（见 §13.3 字段表），指定 `nodeBundleId` 时其 `stageId` 由节点包自动派生。节点包入口/出口（`entryNodeRef`/`exitNodeRef`）与按钮 `nextNodeId` 均引用节点的 `referenceId`，因此可跨节点包连边（出口节点的按钮 `nextNodeId` 指向下一节点包的入口节点 `referenceId`）。
-> 删除节点包**不会**自动清理其他节点包对其 `nextNodeBundleId`、以及节点对其 `entryNodeRef`/`exitNodeRef` 的引用，需后台自行维护（同 §13 节点删除的注意事项）。
+> **节点与节点包的归属关系**：节点通过 `nodeBundleId` 隶属节点包（见 §13.3 字段表），指定 `nodeBundleId` 时其 `stageId` 由节点包自动派生。节点间靠按钮 `buttons[].nextNodeId`（填目标节点 **`code`**，见 §13.3.1 下方）串接，可跨节点包连边（出口节点的按钮 `nextNodeId` 指向下一节点包的入口节点 code）。
+
+### 16.2 事件视图（路径图）接口
+
+> 入口 / 出口**动态计算**，不落库（见 §6.2.1 与 §6.3）。口径：**入口** = 本事件内无本事件按钮指向的节点；**出口** = 有按钮指向非本事件节点的节点；`isNormal` = 入口与出口均非空。
+
+#### 16.2.1 事件级路径图
+
+```
+GET /api/admin/node-bundles/graph
+```
+
+**响应** `MESSAGE_BODY`：
+
+```json
+{
+  "bundles": [
+    { "_id": "66...", "code": "nb_world_01", "name": "初入青云", "stageId": "66..." }
+  ],
+  "bundleViews": [
+    {
+      "_id": "66...",
+      "code": "nb_world_01",
+      "name": "初入青云",
+      "stageId": "66...",
+      "entryNodeCodes": ["n001"],
+      "exitNodeCodes": ["n005"],
+      "isNormal": true,
+      "nextBundleIds": ["66...（下一事件 _id）"]
+    }
+  ],
+  "edges": [
+    { "from": "66...（A 事件 _id）", "to": "66...（B 事件 _id）", "viaNodeCode": "n005" }
+  ]
+}
+```
+
+- `entryNodeCodes` / `exitNodeCodes`：本事件的入口 / 出口节点 `code` 列表。
+- `isNormal=false` 的事件需在后台补全（如「缺出口」= 出口节点无按钮指向其他事件）。
+- `edges`：事件间有向边，由 A 出口节点的按钮 `nextNodeId` 连到 B 入口节点产生，`viaNodeCode` 标注经手节点。
+
+#### 16.2.2 单事件内节点图
+
+```
+GET /api/admin/node-bundles/:code/nodes
+```
+
+**响应** `MESSAGE_BODY`：
+
+```json
+{
+  "bundle": {
+    "_id": "66...", "code": "nb_world_01", "name": "初入青云", "stageId": "66...",
+    "entryNodeCodes": ["n001"], "exitNodeCodes": ["n005"], "isNormal": true
+  },
+  "nodes": [
+    {
+      "_id": "66...", "code": "n001", "name": "山门之前", "title": "...", "isBattle": false,
+      "inDegree": 0, "outDegree": 2,
+      "externalOuts": [{ "code": "n101", "bundleId": "66...", "bundleName": "青云内门 (nb_world_02)" }],
+      "buttons": [{ "code": "b_enter", "text": "叩响山门", "nextNodeId": "n002" }]
+    }
+  ],
+  "edges": [
+    { "from": "n001", "to": "n002", "viaButton": "b_enter" }
+  ]
+}
+```
+
+- `inDegree` / `outDegree`：本事件内被指向 / 指向的按钮数（仅统计本事件内边）。
+- `externalOuts`：指向**其他事件**节点的出边（含目标事件名，用于跨事件连线）。
+- `edges`：本事件内节点间有向边，`viaButton` 标注经手按钮 `code`。

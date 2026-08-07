@@ -279,28 +279,31 @@ breakthrough: {
 
 > 大阶段 = 第 N 卷（dev-plan §1.1 已确认"阶段即卷"），不单独配置卷名。
 
-### 6.2.1 `config.nodeBundles`（节点包 · ✅ 已实现 2026-08-06）
+### 6.2.1 `config.nodeBundles`（节点包 / 界面称「事件」 · ✅ 已实现）
 
 介于「大阶段」与「剧情节点」之间的中间层，三层结构：**大阶段(stage) → 节点包(nodeBundle) → 剧情节点(node)**。
 
 服务端 collection：`config.nodeBundles`，按 `code` 增删改查（`/api/admin/node-bundles`，见 admin-api.md §16）。
 
+> ⚠️ **双层命名规则（2026-08-07 起）**
+> - **代码 / 数据层**：一律称「**节点包(nodeBundle)**」——集合 `config.nodeBundles`、路由 `/node-bundles`、字段 `nodeBundleId`/`nextNodeBundleId`、组件 `NodeBundleListView` 等都用 nodeBundle，**不得叫「事件」**。
+> - **admin 用户可见文案层**：左侧菜单、路由 meta、页面标题 / 按钮 / 列名 / 弹窗 / 表单标签**统一显示「事件」**（纯展示别名，代码标识符不变）。仅改展示文案，不改名代码。
+
 | 字段 | 类型 | 必填 | 唯一 | 说明 |
 |---|---|---|---|---|
 | `_id` | ObjectId | 是 | 是 | 主键 |
-| `code` | string | 是 | 是 | 节点包业务标识（如 `nb_world_01`） |
+| `code` | string | 是 | 是 | 节点包业务标识（如 `nb_world_01`）。**允许编辑**：更新时若变更 code，服务端校验全局唯一（见 admin-api.md §16.1） |
 | `name` | string | 是 | 否 | 节点包名称 |
 | `stageId` | ObjectId | 否 | 否 | FK → `config.stages._id`（所属大阶段） |
 | `description` | string | 否 | 否 | 节点包描述 |
-| `positionX` | number | 否 | 否 | 图形编辑器 X 坐标（默认 0） |
-| `positionY` | number | 否 | 否 | 图形编辑器 Y 坐标（默认 0） |
-| `entryNodeRef` | string | 否 | 否 | 节点包入口节点引用 → `config.nodes.referenceId`（单一出发点） |
-| `exitNodeRef` | string | 否 | 否 | 节点包出口节点引用 → `config.nodes.referenceId`（单一终点） |
-| `nextNodeBundleId` | ObjectId | 否 | 否 | FK → `config.nodeBundles._id`（世界路径图中后继节点包，单链接） |
 | `createdAt` | Date | 自动 | — | Mongoose timestamps |
 | `updatedAt` | Date | 自动 | — | Mongoose timestamps |
 
-> 「殊途同归」：节点包内部一组节点，仅一个 `entryNodeRef` 入口、一个 `exitNodeRef` 出口，中间可分支。图形（路径）编辑器中，节点包是地图上的一个图形节点，`positionX/Y` 摆放位置，`nextNodeBundleId` 串成世界路径。
+> **入口 / 出口节点（动态计算，不落库）**：节点包**不再存储** `entryNodeRef` / `exitNodeRef` / `positionX` / `positionY` / `nextNodeBundleId`（这 5 个字段已于 2026-08-06 删除；图形坐标由前端画图时自行计算，不入库）。入口与出口改为按事件内节点的**按钮指向**动态推导（算法见 §6.3 与 admin-api.md §16.2）：
+> - **入口节点** = 本事件内**没有被任何本事件按钮指回**的节点（即它是起点）。
+> - **出口节点** = 有按钮指向**非本事件节点**的节点（即它跨事件出边）。
+> - `isNormal` = 入口与出口**均非空**；两者任一为空即标记为非正常（如「缺出口」「缺入口」）。
+> - 事件间边 = A 的出口节点 → B 的入口节点（经 A 某出口节点的按钮 `nextNodeId` 连到）。
 
 ### 6.3 `config.nodes`（副本配置 · 含 buttons 子文档）
 
@@ -311,7 +314,6 @@ breakthrough: {
   name: string,
   stageId: ObjectId,              // FK → config.stages._id（指定 nodeBundleId 时由节点包自动派生）
   nodeBundleId: ObjectId,         // FK → config.nodeBundles._id（节点隶属于节点包）
-  referenceId: string,            // 引用 ID（唯一·稀疏索引）：按钮/节点包入口出口引用此值，跨节点包连边
   title: string,
   text: string,
   imageUrl?: string,
@@ -331,7 +333,7 @@ breakthrough: {
       text: string,
       imageUrl?: string,
       effects: object,
-      nextNodeIds: ObjectId[]    // FK → config.nodes._id[]
+      nextNodeIds: string[]      // 目标节点 code[]（战斗结算后跳转；不计入事件图"指向"）
     },
     failure: {
       text: string,
@@ -342,7 +344,7 @@ breakthrough: {
       adId?: ObjectId,            // FK → config.ads._id (待定)
       adAfterHpDeduction?: boolean,
       adAfterSuccessReward?: boolean,
-      adNextNodeIds?: ObjectId[]
+      adNextNodeIds?: string[]   // 目标节点 code[]（广告续命后跳转；不计入事件图）
     }
   },
 
@@ -357,7 +359,7 @@ breakthrough: {
     conditions: object,           // 等级/属性/剧情道具/遗物/CG 条件
     costs: object,                // 灵石/剧情道具消耗
     effects: object,              // 属性/寿元/灵石/物品/CG 变化
-    nextNodeId: ObjectId,         // FK → config.nodes._id
+    nextNodeId: string,           // 目标节点 `code`（如 `n002`）；按 code 互引，可跨节点包（不存 ObjectId / referenceId）
     isOneTime: boolean,
     afterUse: 'hide' | 'disable'
   }]
@@ -365,6 +367,10 @@ breakthrough: {
 ```
 
 > 按钮不存独立表，不在 `game.users` 留引用（`currentNodeButtonResult.buttonIds` 改为 `nodeId` 即可，buttons 通过查节点配置拉）。
+
+> ⚠️ **节点互引用 `code`（2026-08-06 起，`referenceId` 已彻底删除，含数据库）**：按钮 `nextNodeId` 与战斗结果 `nextNodeIds` / `adNextNodeIds` 一律**直接填目标节点的 `code` 字符串**（如 `n002` / `n003`），不再使用 `referenceId` 或 ObjectId。一次性迁移脚本 `scripts/migrate-node-refs.ts` 已把库中所有 `referenceId` 字段、稀疏唯一索引、以及按钮里残留的 `_id` / `ref_xxx` 引用统一改写为 `code`。
+>
+> ⚠️ **「指向」只看按钮**：节点 / 事件图的入口出口、事件间边**只依据按钮 `buttons[].nextNodeId`** 计算；战斗结果 `battleConfig.success.nextNodeIds` / `failure.adNextNodeIds` 是战斗结算后的跳转，**不计入**「节点指向 / 事件入口出口 / 事件间边」。
 
 ### 6.4 `game.users` v4（完整玩家状态）
 
@@ -582,6 +588,12 @@ unlockedCgs: [{
 | 10 | 所有 FK 一律 ObjectId 引用对方 `_id`（`code` 不参与 FK） | 用户最终拍板 |
 | 11 | `isCurrent` 单纯 boolean，不加唯一索引 | 用户拍板 |
 | 12 | `code` 业务标识字段保留，全表唯一索引 | 用户拍板 |
+| 13 | 三层结构中间层命名为「节点包(nodeBundle)」而非 event；admin 界面文案显示「事件」 | 用户拍板（双层命名：代码 nodeBundle / 界面 事件） |
+| 14 | 节点包删除 `positionX/Y`、`entryNodeRef`、`exitNodeRef`、`nextNodeBundleId` 字段，图形坐标前端画图自算 | 用户拍板（2026-08-06） |
+| 15 | 节点互引用 `code`，彻底删除 `referenceId`（含数据库索引与数据）；按钮 `nextNodeId` 填目标节点 code | 用户拍板（2026-08-06） |
+| 16 | 「指向」只看按钮 `buttons[].nextNodeId`；战斗结果 `nextNodeIds` 不计入事件图入口出口 / 事件间边 | 用户拍板 |
+| 17 | 入口节点 = 本事件内无本事件按钮指向的节点；出口节点 = 有按钮指向非本事件节点的节点 | 用户拍板（驱动事件视图） |
+| 18 | 事件(节点包)与节点的 `code` 均允许编辑，更新时服务端做全局唯一校验 | 用户拍板（2026-08-07） |
 
 ---
 
