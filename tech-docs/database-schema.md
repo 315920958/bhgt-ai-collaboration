@@ -560,13 +560,15 @@ unlockedCgs: [{
 |---|---|---|---|
 | `code` | string | 是 | 业务主键，全局唯一（索引） |
 | `name` | string | 是 | CG 名称 |
-| `thumbnailUrl` | string | 否 | 缩略图 URL（列表 / 卡片用） |
-| `originalUrl` | string | 否 | 原图 URL（详情 / 放大查看） |
-| `placeholderUrl` | string | 否 | 未解锁占位图 URL |
+| `thumbnailUrl` | string | 否 | 缩略图 URL（列表 / 卡片用），仅存相对资源域名的路径 |
+| `originalUrls` | string[] | 否 | CG 分阶段原图数组，**最多 4 张**（对应第 1~4 阶段），仅存相对资源域名的路径 |
+| `placeholderUrl` | string | 否 | 未解锁占位图 URL，仅存相对资源域名的路径 |
 | `reviewText` | string | 否 | 回看 / 鉴赏文字 |
 | `createdAt` | Date | 自动 | Mongoose timestamps |
 | `updatedAt` | Date | 自动 | Mongoose timestamps |
 | `_id` | ObjectId | 自动 | 主键 |
+
+> **图片只存相对路径、域名统一配置**：CG 所有图片字段（thumbnailUrl / originalUrls / placeholderUrl）只存「相对资源域名的路径」（如 `/bhgt-public-files/cg/x.png`），完整 URL 由前端 `VITE_BHGT_ASSET_BASE_URL` 拼接。后台填写时若粘贴完整 URL，前端会自动去掉域名只留路径（详见 admin-api.md §14）。换 CDN / OSS 域名时只改该环境变量，无需改数据。
 
 关联：`game.users.unlockedCgs[].cgId` → `config.cgs._id`（FK，ObjectId 引用对方主键）。
 
@@ -594,6 +596,7 @@ unlockedCgs: [{
 | 16 | 「指向」只看按钮 `buttons[].nextNodeId`；战斗结果 `nextNodeIds` 不计入事件图入口出口 / 事件间边 | 用户拍板 |
 | 17 | 入口节点 = 本事件内无本事件按钮指向的节点；出口节点 = 有按钮指向非本事件节点的节点 | 用户拍板（驱动事件视图） |
 | 18 | 事件(节点包)与节点的 `code` 均允许编辑，更新时服务端做全局唯一校验 | 用户拍板（2026-08-07） |
+| 19 | CG `originalUrl` 单值改为 `originalUrls: string[]`（最多 4 张分阶段图）；所有图片字段只存相对资源域名的路径，域名由前端 `VITE_BHGT_ASSET_BASE_URL` 统一拼接；粘贴完整 URL 时前端自动去域名 | 用户拍板（2026-08-07） |
 
 ---
 

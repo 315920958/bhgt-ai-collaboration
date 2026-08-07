@@ -1154,12 +1154,15 @@ DELETE /api/admin/cgs/:code        # 删除，不存在 → 10007
 |---|---|---|---|
 | `code` | string | 是(建) | 业务标识，唯一 |
 | `name` | string | 是(建) | CG 名称 |
-| `thumbnailUrl` | string | 否 | 缩略图 URL，默认 `''` |
-| `originalUrl` | string | 否 | CG 原图 URL，默认 `''` |
-| `placeholderUrl` | string | 否 | 未解锁占位图 URL，默认 `''` |
+| `thumbnailUrl` | string | 否 | 缩略图路径，默认 `''`（**只存相对资源域名的路径**，不含域名） |
+| `originalUrls` | string[] | 否 | CG 分阶段原图数组，**最多 4 张**（对应第 1~4 阶段），默认 `[]`（只存相对路径） |
+| `placeholderUrl` | string | 否 | 未解锁占位图路径，默认 `''`（只存相对路径） |
 | `reviewText` | string | 否 | 回看剧情文字，默认 `''` |
 
 错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
+
+> **图片只存路径、域名统一配置**：所有图片字段只接受「相对资源域名的路径」（如 `/bhgt-public-files/cg/x.png`）。后台编辑器中粘贴完整 URL（如 `https://oss-cn-beijing.aliyuncs.com/bhgt-public-files/cg/x.png`）时，前端会**自动去掉协议+域名**，仅保留路径存储；完整 URL 在展示时由前端 `VITE_BHGT_ASSET_BASE_URL` 拼接。这样换 CDN / OSS 域名时只改该环境变量即可，无需迁移数据库。
+> `originalUrls` 最多 4 个元素（第 1~4 阶段），超出时新增按钮禁用。
 
 ## 15. 战斗评分档位（config.battles）
 
