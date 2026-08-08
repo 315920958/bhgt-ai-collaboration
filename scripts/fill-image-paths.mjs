@@ -4,6 +4,7 @@
 //   2. 找到则改写为「/相对图片根的路径」即 OSS key（/cg/清纯/平儿.jpg）
 //   3. 已是带 / 的路径则不动；图片目录下无同名则保留原名并告警
 //   4. 保留中文名，不转拼音（人类可读）
+// 表头列名（2026-08-08 纠正版）：配图(中文名) / 战斗成功图(中文名) / 战斗失败图(中文名)
 // 用法：node scripts/fill-image-paths.mjs [输入xlsx] [输出xlsx]
 import ExcelJS from 'exceljs'
 import fs from 'fs'
@@ -17,7 +18,7 @@ const inFile = process.argv[2] || path.join(root, '剧情配置', '事件与节�
 const outFile = process.argv[3] || path.join(root, '剧情配置', '事件与节点配置表_已补全路径.xlsx')
 
 const IMG_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.ico', '.tiff', '.heic', '.avif'])
-const IMAGE_HEADERS = ['配图', '战斗成功图', '战斗失败图']
+const IMAGE_HEADERS = ['配图(中文名)', '战斗成功图(中文名)', '战斗失败图(中文名)']
 
 // 1) 建立 纯文件名 -> /相对图片根路径 映射
 const nameToRel = {}
