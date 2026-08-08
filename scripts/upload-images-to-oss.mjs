@@ -4,7 +4,8 @@
  * 把指定目录下的图片上传到阿里云 OSS（bhgt-public-files, oss-cn-beijing）。
  *
  * 用法:
- *   node upload-images-to-oss.mjs <图片目录> [--env <env文件路径>] [--recursive]
+ *   node upload-images-to-oss.mjs [<图片目录>] [--env <env文件路径>] [--recursive]
+ *   省略 <图片目录> 时，默认使用脚本上级的「图片/」目录（自动递归上传子目录）。
  *
  * 规则:
  *   1. 遍历目录下图片；中文名转拼音作为 OSS 对象名（不含中文保持原名）。
@@ -35,6 +36,8 @@ const IMAGE_EXT = new Set([
 ]);
 const SHA1_SUFFIX = '.sha1.txt';
 const DEFAULT_ENV = path.resolve(__dirname, '../../bhgt-server/.env.test');
+// 默认图片目录：相对脚本位置（scripts/ 上级 = 项目根）的「图片/」目录；不写死机器绝对路径
+const DEFAULT_IMAGE_DIR = path.resolve(__dirname, '..', '图片');
 
 // ---------- 解析参数 ----------
 function parseArgs(argv) {
@@ -130,15 +133,14 @@ function writeSha1Txt(localPath, sha1) {
 // ---------- 主流程 ----------
 async function main() {
   const { dir, opts } = parseArgs(process.argv.slice(2));
-  if (!dir) {
-    console.error('用法: node upload-images-to-oss.mjs <图片目录> [--env <env>] [--recursive]');
-    process.exit(1);
-  }
-  const targetDir = path.resolve(dir);
+  // 省略目录时默认指向脚本上级的「图片/」目录；默认目录场景下自动递归（图片库天然分层）
+  const usedDefaultDir = !dir;
+  const targetDir = path.resolve(dir || DEFAULT_IMAGE_DIR);
   if (!fs.existsSync(targetDir) || !fs.statSync(targetDir).isDirectory()) {
     console.error(`目录不存在: ${targetDir}`);
     process.exit(1);
   }
+  const recursive = usedDefaultDir ? true : opts.recursive;
 
   loadEnv(opts);
 
@@ -161,7 +163,7 @@ async function main() {
     secure: true,
   });
 
-  const files = walk(targetDir, opts.recursive).sort();
+  const files = walk(targetDir, recursive).sort();
   if (files.length === 0) {
     console.log('目录下没有图片文件。');
     return;
