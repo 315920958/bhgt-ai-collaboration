@@ -1303,3 +1303,29 @@ GET /api/admin/node-bundles/:code/nodes
 - `inDegree` / `outDegree`：本事件内被指向 / 指向的按钮数（仅统计本事件内边）。
 - `externalOuts`：指向**其他事件**节点的出边（含目标事件名，用于跨事件连线）。
 - `edges`：本事件内节点间有向边，`viaButton` 标注经手按钮 `code`。
+
+## 17. 图片字段统一约定（全局）
+
+后台**所有**图片字段遵循同一规则，无例外：
+
+1. **数据库只存「相对 OSS 域名的路径」**，如 `/cg/cg_01.png`、`/item/rel_01.png`；不存协议、不存域名。
+2. **完整地址由前端拼接**：`VITE_BHGT_OSS_DOMAIN` + 路径（当前值 `https://bhgt-public-files.oss-cn-beijing.aliyuncs.com`）。换 CDN / OSS 域名时只改环境变量，无需迁移数据。
+3. **粘贴完整 URL 自动去域名**：编辑框粘贴 `https://<任意域名>/cg/x.png` 会自动剥成 `/cg/x.png`；失焦时再规整一次（覆盖手工输入 / 旧数据编辑的情况）。
+4. **实时预览**：路径一填写/修改，输入框右侧立刻显示缩略图（点击可放大），下方展示拼接后的完整地址便于核对；图挂了显示「失败」。
+5. 若字段值本身已是 `http(s)://` 开头的完整 URL（历史数据 / 外链），展示时原样使用，不再拼域名。
+
+### 17.1 全库图片字段清单
+
+| 集合 | 字段 | 后台页面 |
+|---|---|---|
+| `config.cgs` | `thumbnailUrl` | CG 图鉴 → 封面缩略图 |
+| `config.cgs` | `originalUrls[]`（最多 4） | CG 图鉴 → CG 阶段图 |
+| `config.cgs` | `placeholderUrl` | CG 图鉴 → 未解锁占位图 |
+| `config.nodes` | `imageUrl` | 剧情节点 → 基础配置 · 剧情图片 |
+| `config.nodes` | `battleConfig.success.imageUrl` | 剧情节点 → 战斗配置 · 成功图片 |
+| `config.nodes` | `battleConfig.failure.imageUrl` | 剧情节点 → 战斗配置 · 失败图片 |
+| `config.stages` | `mapImageUrl` | 大阶段 → 地图图片 |
+| `config.stages` | `passImageUrl` | 大阶段 → 通关图片 |
+| `config.items` | `imageUrl` | 物品 → 图片 |
+
+> 新增图片字段时：admin 端一律使用 `src/components/ImagePathInput.vue`（已内置去域名 + 预览 + 完整地址提示），不要再写裸 `el-input`；列表页缩略图用 `resolveAssetUrl(path, ossDomain)`。h5 端用 `src/utils/asset.ts` 的同名方法。

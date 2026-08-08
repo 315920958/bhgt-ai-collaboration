@@ -568,7 +568,7 @@ unlockedCgs: [{
 | `updatedAt` | Date | 自动 | Mongoose timestamps |
 | `_id` | ObjectId | 自动 | 主键 |
 
-> **图片只存相对路径、域名统一配置**：CG 所有图片字段（thumbnailUrl / originalUrls / placeholderUrl）只存「相对 OSS 域名的路径」（如 `/cg/x.png`），完整 URL 由前端 `VITE_BHGT_OSS_DOMAIN` 拼接。后台填写时若粘贴完整 URL，前端会自动去掉域名只留路径（详见 admin-api.md §14）。换 CDN / OSS 域名时只改该环境变量，无需改数据。
+> **图片只存相对路径、域名统一配置（全库通用）**：本库**所有**图片字段——CG 的 `thumbnailUrl` / `originalUrls` / `placeholderUrl`，节点的 `imageUrl` 与 `battleConfig.success|failure.imageUrl`，阶段的 `mapImageUrl` / `passImageUrl`，物品的 `imageUrl`——一律只存「相对 OSS 域名的路径」（如 `/cg/x.png`），完整 URL 由前端 `VITE_BHGT_OSS_DOMAIN` 拼接。后台填写时若粘贴完整 URL，前端自动去掉域名只留路径，并实时预览缩略图。换 CDN / OSS 域名时只改该环境变量，无需改数据。字段清单与实现约定见 **admin-api.md §17**。
 
 关联：`game.users.unlockedCgs[].cgId` → `config.cgs._id`（FK，ObjectId 引用对方主键）。
 
