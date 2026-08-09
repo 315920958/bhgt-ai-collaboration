@@ -34,8 +34,7 @@ H_NODE  = [
     '显示按钮数', '战斗节点', '通过后开商店'
 ]
 H_BTN   = [
-    '关联节点中文名', '序号', '文案', '类型', '必现', '权重',
-    '条件JSON', '消耗JSON', '效果JSON', '目标中文名'
+    '关联节点中文名', '序号', '文案', '类型', '必现', '权重', '目标中文名'
 ]
 
 def yn(b): return '是' if b else '否'
@@ -90,9 +89,6 @@ for n in nodes:
             btn.get('type','normal'),
             yn(btn.get('isRequired', False)),
             btn.get('weight',''),
-            '',
-            '',
-            '',
             btn_target_name(btn.get('nextNodeId',''))
         ])
 

@@ -30,8 +30,7 @@ const H_NODE = [
 ]
 
 const H_BTN = [
-  '关联节点中文名', '序号', '文案', '类型', '必现', '权重',
-  '条件JSON', '消耗JSON', '效果JSON', '目标中文名'
+  '关联节点中文名', '序号', '文案', '类型', '必现', '权重', '目标中文名'
 ]
 
 // ===== 节点行构造器（按表头映射，杜绝手数数组对不齐）=====
@@ -60,9 +59,6 @@ function mkBtn (o) {
   set('类型', o.type || 'normal')
   set('必现', o.req || '否')
   set('权重', o.weight || '')
-  set('条件JSON', o.cond || '')
-  set('消耗JSON', o.cost || '')
-  set('效果JSON', o.eff || '')
   set('目标中文名', o.target || '')
   return a
 }
