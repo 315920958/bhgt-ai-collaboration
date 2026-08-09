@@ -7,6 +7,3 @@
 # dependencies
 node_modules/
 dist/
-
-# 图片素材（本地 PNG/JPG 等，不入库；上传走 OSS）
-图片/

@@ -286,7 +286,7 @@ breakthrough: {
 服务端 collection：`config.nodeBundles`，按 `code` 增删改查（`/api/admin/node-bundles`，见 admin-api.md §16）。
 
 > ⚠️ **双层命名规则（2026-08-07 起）**
-> - **代码 / 数据层**：一律称「**节点包(nodeBundle)**」——集合 `config.nodeBundles`、路由 `/node-bundles`、字段 `nodeBundleId`/`nextNodeBundleId`、组件 `NodeBundleListView` 等都用 nodeBundle，**不得叫「事件」**。
+> - **代码 / 数据层**：一律称「**节点包(nodeBundle)**」——集合 `config.nodeBundles`、路由 `/node-bundles`、字段 `nodeBundleCode`、组件 `NodeBundleListView` 等都用 nodeBundle，**不得叫「事件」**。
 > - **admin 用户可见文案层**：左侧菜单、路由 meta、页面标题 / 按钮 / 列名 / 弹窗 / 表单标签**统一显示「事件」**（纯展示别名，代码标识符不变）。仅改展示文案，不改名代码。
 
 | 字段 | 类型 | 必填 | 唯一 | 说明 |
@@ -294,7 +294,7 @@ breakthrough: {
 | `_id` | ObjectId | 是 | 是 | 主键 |
 | `code` | string | 是 | 是 | 节点包业务标识（如 `nb_world_01`）。**允许编辑**：更新时若变更 code，服务端校验全局唯一（见 admin-api.md §16.1） |
 | `name` | string | 是 | 否 | 节点包名称 |
-| `stageId` | ObjectId | 否 | 否 | FK → `config.stages._id`（所属大阶段） |
+| `stageId` | ObjectId | 否 | 否 | FK → `config.stages._id`（所属大阶段；导入脚本按阶段编号查得 `_id` 后写入） |
 | `description` | string | 否 | 否 | 节点包描述 |
 | `createdAt` | Date | 自动 | — | Mongoose timestamps |
 | `updatedAt` | Date | 自动 | — | Mongoose timestamps |
@@ -310,10 +310,11 @@ breakthrough: {
 ```ts
 {
   _id: ObjectId,
-  code: string,
+  code: string,                  // 只读完整编号：`${nodeBundleCode}_${nodeSubCode}`
   name: string,
-  stageId: ObjectId,              // FK → config.stages._id（指定 nodeBundleId 时由节点包自动派生）
-  nodeBundleId: ObjectId,         // FK → config.nodeBundles._id（节点隶属于节点包）
+  stageId: ObjectId,              // FK → config.stages._id（指定 nodeBundleCode 时由事件自动派生）
+  nodeBundleCode: string,         // FK → config.nodeBundles.code（节点隶属于事件；Excel 直接填写事件编号）
+  nodeSubCode: string,            // 事件内子编号；与 nodeBundleCode 联合唯一
   title: string,
   text: string,
   imageUrl?: string,
@@ -359,7 +360,7 @@ breakthrough: {
     conditions: object,           // 等级/属性/剧情道具/遗物/CG 条件
     costs: object,                // 灵石/剧情道具消耗
     effects: object,              // 属性/寿元/灵石/物品/CG 变化
-    nextNodeId: string,           // 目标节点 `code`（如 `n002`）；按 code 互引，可跨节点包（不存 ObjectId / referenceId）
+    nextNodeId: string,           // 目标节点 `code`（如 `n002`）；按 code 互引，可跨事件（不存 ObjectId / referenceId）
     isOneTime: boolean,
     afterUse: 'hide' | 'disable'
   }]
@@ -368,7 +369,7 @@ breakthrough: {
 
 > 按钮不存独立表，不在 `game.users` 留引用（`currentNodeButtonResult.buttonIds` 改为 `nodeId` 即可，buttons 通过查节点配置拉）。
 
-> ⚠️ **节点互引用 `code`（2026-08-06 起，`referenceId` 已彻底删除，含数据库）**：按钮 `nextNodeId` 与战斗结果 `nextNodeIds` / `adNextNodeIds` 一律**直接填目标节点的 `code` 字符串**（如 `n002` / `n003`），不再使用 `referenceId` 或 ObjectId。一次性迁移脚本 `scripts/migrate-node-refs.ts` 已把库中所有 `referenceId` 字段、稀疏唯一索引、以及按钮里残留的 `_id` / `ref_xxx` 引用统一改写为 `code`。
+> ⚠️ **剧情配置编号引用（2026-08-09 起）**：事件 → 剧情节点的归属字段为 `nodeBundleCode`，直接填写 `config.nodeBundles.code`；节点完整编号 `code` 为只读派生值：`${nodeBundleCode}_${nodeSubCode}`；按钮 → 下一剧情节点使用 `nextNodeId`，直接填写目标 `config.nodes.code`；按钮本身是节点内嵌子文档，不建立独立引用。相关索引：事件/节点 `code` 全局唯一索引、节点 `nodeBundleCode` 普通索引、`{ nodeBundleCode, nodeSubCode }` 联合唯一索引、`buttons.nextNodeId` 多键索引。仅大阶段仍使用 `stageId: ObjectId`，由 Excel 导入脚本按阶段编号查找后写入。
 >
 > ⚠️ **「指向」只看按钮**：节点 / 事件图的入口出口、事件间边**只依据按钮 `buttons[].nextNodeId`** 计算；战斗结果 `battleConfig.success.nextNodeIds` / `failure.adNextNodeIds` 是战斗结算后的跳转，**不计入**「节点指向 / 事件入口出口 / 事件间边」。
 
@@ -596,6 +597,8 @@ unlockedCgs: [{
 | 16 | 「指向」只看按钮 `buttons[].nextNodeId`；战斗结果 `nextNodeIds` 不计入事件图入口出口 / 事件间边 | 用户拍板 |
 | 17 | 入口节点 = 本事件内无本事件按钮指向的节点；出口节点 = 有按钮指向非本事件节点的节点 | 用户拍板（驱动事件视图） |
 | 18 | 事件(节点包)与节点的 `code` 均允许编辑，更新时服务端做全局唯一校验 | 用户拍板（2026-08-07） |
+| 20 | 事件—节点归属改为 `nodeBundleCode`（事件编号）引用；按钮仍内嵌节点，按钮跳转使用节点编号；大阶段继续 ObjectId | 用户拍板（2026-08-09，支持 Excel 编写/导入） |
+| 21 | 节点增加事件内 `nodeSubCode`；完整节点编号固定派生为 `${nodeBundleCode}_${nodeSubCode}`，后台只读展示 | 用户拍板（2026-08-09） |
 | 19 | CG `originalUrl` 单值改为 `originalUrls: string[]`（最多 4 张分阶段图）；所有图片字段只存相对 OSS 域名的路径，域名由前端 `VITE_BHGT_OSS_DOMAIN` 统一拼接；粘贴完整 URL 时前端自动去域名 | 用户拍板（2026-08-07） |
 
 ---

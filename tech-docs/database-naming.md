@@ -26,7 +26,7 @@
 
 本项目存在一个**代码标识符**与**用户可见文案**双层命名的特殊情况：
 
-- 集合 `config.nodeBundles` 在**代码 / 数据层**称为「**节点包(nodeBundle)**」——路由 `/node-bundles`、字段 `nodeBundleId`/`nextNodeBundleId`、组件名 `NodeBundleListView` 等一律用 `nodeBundle`。
+- 集合 `config.nodeBundles` 在**代码 / 数据层**称为「**节点包(nodeBundle)**」——路由 `/node-bundles`、字段 `nodeBundleCode`、组件名 `NodeBundleListView` 等一律用 `nodeBundle`。
 - 在 **admin 后台的用户可见文案层**统一显示「**事件**」（左侧菜单、路由标题、页面标题、按钮、列表列名、弹窗、表单标签），仅为展示别名，**代码标识符不变**。
 
 > 规则：凡涉及「该集合」的命名——数据 / 接口 / 数据库层面写 nodeBundle（节点包），只有给人看的 UI 文案写「事件」。切勿在代码层混用「事件」二字。

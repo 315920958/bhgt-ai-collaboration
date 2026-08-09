@@ -761,7 +761,7 @@ PUT /api/admin/game-config
 | GET | `/api/admin/players` | 玩家（游戏角色）列表 |
 | POST | `/api/admin/players/test` | 增加测试玩家 |
 | **剧情节点** | | |
-| GET | `/api/admin/nodes` | 节点列表（可按 `stageId` / `isBattle` / `nodeBundleId` 过滤） |
+| GET | `/api/admin/nodes` | 节点列表（可按 `stageId` / `isBattle` / `nodeBundleCode` 过滤） |
 | GET | `/api/admin/nodes/:code` | 节点详情 |
 | POST | `/api/admin/nodes` | 新增节点 |
 | PUT | `/api/admin/nodes/:code` | 更新节点 |
@@ -990,12 +990,12 @@ POST /api/admin/players/test
 ### 13.1 节点列表
 
 ```
-GET /api/admin/nodes?stageId=<可选>&isBattle=<可选 1|true|0|false>
+GET /api/admin/nodes?stageId=<可选>&isBattle=<可选 1|true|0|false>&nodeBundleCode=<可选>
 ```
 
 - `stageId`：按所属大阶段过滤（传 `config.stages._id`）。
 - `isBattle`：传 `1` / `true` 只返回战斗节点；传 `0` / `false` 只返回非战斗节点。
-- `nodeBundleId`：按所属节点包过滤（传 `config.nodeBundles._id`）。
+- `nodeBundleCode`：按所属事件过滤（传 `config.nodeBundles.code`）。
 - 返回：节点数组（按 `code` 升序）。
 
 ### 13.2 节点详情
@@ -1014,11 +1014,12 @@ POST /api/admin/nodes
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `code` | string | 是 | 业务标识，唯一（如 `n_001`） |
+| `code` | string | 否（忽略传入值） | 只读完整编号，由服务端按 `${nodeBundleCode}_${nodeSubCode}` 自动生成 |
 | `name` | string | 是 | 后台显示的节点名 |
 | `title` | string | 是 | 玩家可见节点标题 |
-| `stageId` | string | 否 | 所属大阶段 `config.stages._id`（空串视为不绑定）。若同时提供 `nodeBundleId`，以节点包所属阶段为准自动派生，无需重复传 |
-| `nodeBundleId` | string | 否 | 所属节点包 `config.nodeBundles._id`；节点隶属于节点包，节点包隶属于阶段 |
+| `stageId` | string | 否（忽略传入值） | 由所属事件自动派生 |
+| `nodeBundleCode` | string | 是 | 所属事件 `config.nodeBundles.code`；节点隶属于事件，Excel 可直接填写编号 |
+| `nodeSubCode` | string | 是 | 事件内子编号；完整节点编号 = `nodeBundleCode + '_' + nodeSubCode` |
 | `text` | string | 否 | 节点正文，默认 `''` |
 | `imageUrl` | string | 否 | 配图，默认 `''` |
 | `isBattle` | boolean | 否 | 是否战斗节点，默认 false |
@@ -1046,11 +1047,11 @@ POST /api/admin/nodes
 
 ```json
 {
-  "code": "n_001",
   "name": "青云宗入门",
+  "nodeSubCode": "01",
   "title": "山门之前",
   "text": "你立于青云宗山门前，云雾缭绕。",
-  "stageId": "66...（某 stage _id）",
+  "nodeBundleCode": "nb_1（所属事件编号）",
   "isBattle": false,
   "buttonCount": 3,
   "buttons": [
@@ -1073,9 +1074,9 @@ POST /api/admin/nodes
 }
 ```
 
-返回：新建的节点文档。错误：`10001 PARAM_INVALID`（code / name / title 缺失或 code 重复）。
+返回：新建的节点文档。错误：`10001 PARAM_INVALID`（事件/子编号/名称/标题缺失，或该事件下子编号重复）。
 
-> **`code` 允许编辑**：节点的 `code` 与所属节点包的 `code` 均可在更新时修改（PUT 传新 `code`，服务端校验全局唯一，见 §13.4 / §16.1）。迁移脚本 `scripts/migrate-node-refs.ts` 已把库中所有 `referenceId` 与按钮里的 `_id`/`ref_xxx` 引用改写为 `code`，按钮 `nextNodeId` 直接填目标节点 `code`。
+> **编号关系**：节点通过 `nodeBundleCode` 隶属事件，填写事件内唯一 `nodeSubCode`；服务端生成不可手填的完整 `code = nodeBundleCode + '_' + nodeSubCode`。按钮通过 `nextNodeId` 跳转目标节点完整编号。按钮本身内嵌在节点中，无独立配置表。历史库由 `scripts/migrate-node-bundle-code.ts` 从 `nodeBundleId` 迁移。
 
 #### 13.3.1 按钮 `conditions` / `costs` / `effects` 结构约定
 
@@ -1231,7 +1232,7 @@ DELETE /api/admin/node-bundles/:code        # 删除，不存在 → 10007
 
 错误：`10001 PARAM_INVALID`（code / name 缺失或 code 重复）、`10007 NOT_FOUND`（更新/删除/详情不存在）。
 
-> **节点与节点包的归属关系**：节点通过 `nodeBundleId` 隶属节点包（见 §13.3 字段表），指定 `nodeBundleId` 时其 `stageId` 由节点包自动派生。节点间靠按钮 `buttons[].nextNodeId`（填目标节点 **`code`**，见 §13.3.1 下方）串接，可跨节点包连边（出口节点的按钮 `nextNodeId` 指向下一节点包的入口节点 code）。
+> **节点与事件的归属关系**：节点通过 `nodeBundleCode` 隶属事件（见 §13.3 字段表），指定事件编号时其 `stageId` 由事件自动派生。节点间靠按钮 `buttons[].nextNodeId`（填目标节点 **`code`**，见 §13.3.1 下方）串接，可跨事件连边。
 
 ### 16.2 事件视图（路径图）接口
 
