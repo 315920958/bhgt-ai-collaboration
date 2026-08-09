@@ -18,7 +18,7 @@ const inFile = process.argv[2] || path.join(root, '剧情配置', '事件与节�
 const outFile = process.argv[3] || path.join(root, '剧情配置', '事件与节点配置表_已补全路径.xlsx')
 
 const IMG_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg', '.ico', '.tiff', '.heic', '.avif'])
-const IMAGE_HEADERS = ['配图(中文名)', '战斗成功图(中文名)', '战斗失败图(中文名)']
+const IMAGE_HEADERS = ['配图(中文名)']
 
 // 1) 建立 纯文件名 -> /相对图片根路径 映射
 const nameToRel = {}
