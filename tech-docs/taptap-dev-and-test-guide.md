@@ -26,7 +26,7 @@
 
 1. 用 Cocos Creator 3.8.8 打开 `bhgt-cocos-client`（远程仓库名仍是 `bhgt-h5-client`）。
 2. 打开 `assets/scenes/Main.scene`，点击编辑器运行按钮查看首页。
-3. Chrome / Cocos 本地预览使用 Mock 登录；普通 Chrome 不能验证真实 `tap.login()`。
+3. Chrome / Web Mobile 本地预览使用“模拟 TapTap 登录”（模拟 code → dev-login → JWT）；普通 Chrome 不能验证真实 `tap.login()`。
 4. 接入 TapTap 调试工具后，通过真机 TapTap 容器验证 `tap.login()`、code 上送服务端及角色初始化。
 
 以下旧 H5 章节中的 React、4002、H5 OAuth 回调和 `dist` 流程属于历史方案记录，暂时不作为当前玩家端操作依据；服务端凭据与 code 换 openid 的部分仍可作为接口参考。

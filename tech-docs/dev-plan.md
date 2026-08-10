@@ -138,10 +138,10 @@
 
 ## 5. 项目三：bhgt-h5-client（Cocos 玩家端，依赖 server S2+）
 
-> 已有基础：Cocos Creator 3.8.8 2D 项目、`Main.scene`、代码生成的登录首页、Chrome Mock 登录与 TapTap 平台适配层。旧 React + HashRouter + MobileLayout 方案暂时废弃。
+> 已有基础：Cocos Creator 3.8.8 2D 项目、`Main.scene`、代码生成的登录首页、浏览器 TapTap 模拟登录与真实 TapTap 平台适配层。旧 React + HashRouter + MobileLayout 方案暂时废弃。
 
 ### C0 框架与登录 🔧 正在开发中
-- 主场景、Canvas、代码生成 UI、Chrome Mock 登录、TapTap 容器登录适配。
+- 主场景、Canvas、代码生成 UI、浏览器 TapTap 模拟登录、TapTap 容器登录适配。
 
 ### C1 创建角色 + 角色页（依赖 server S4）🟡 待开发
 - 创建角色页（填昵称+选性别，年龄不填、从 0 起）；角色页（玉牌/境界/寿元血格/灵石/属性/临时状态数组/已生效天赋；**不画进度条 Q1 已确认**；年龄 = 已过回合数，0 起每回合 +1 固定 Q9 已确认）。
