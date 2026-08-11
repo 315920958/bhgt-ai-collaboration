@@ -9,6 +9,8 @@
 最后更新：2026-08-10
 
 > **方案更新**：玩家端远程仓库仍为 `bhgt-h5-client`，但 `develop` 已替换为本地目录 `bhgt-cocos-client` 的 Cocos Creator 3.8.8 2D 项目。旧 React H5 / Vite / 4002 开发方案暂时废弃，本文中涉及旧 H5 的地址、命令和 `dist` 上传流程不再作为当前操作依据。
+>
+> **终端原则**：BHGT 手机端优先，主要验证手机竖屏、触摸操作和 TapTap 小游戏容器；桌面 Chrome 只用于辅助预览。
 
 ---
 
@@ -28,6 +30,8 @@
 2. 打开 `assets/scenes/Main.scene`，点击编辑器运行按钮查看首页。
 3. Chrome / Web Mobile 本地预览使用“模拟 TapTap 登录”（模拟 code → dev-login → JWT）；普通 Chrome 不能验证真实 `tap.login()`。
 4. 接入 TapTap 调试工具后，通过真机 TapTap 容器验证 `tap.login()`、code 上送服务端及角色初始化。
+
+登录按钮的正确时序是“先平台、后服务端”：不能跳过 `tap.login()` 直接请求 BHGT 登录接口。浏览器预览只是用模拟平台适配器替代真实 `tap.login()`，真实 TapTap 调试必须在 TapTap 容器中调用 SDK。
 
 以下旧 H5 章节中的 React、4002、H5 OAuth 回调和 `dist` 流程属于历史方案记录，暂时不作为当前玩家端操作依据；服务端凭据与 code 换 openid 的部分仍可作为接口参考。
 

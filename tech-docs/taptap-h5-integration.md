@@ -13,6 +13,7 @@
 |---|---|
 | 发布形态 | 当前走 **TapTap 小游戏包通道**，使用 Cocos Creator 适配与构建；旧 H5 通道方案暂时废弃 |
 | 客户端 | Cocos Creator 3.8.8 + TypeScript，2D 场景与 Canvas/UI 节点 |
+| 终端优先级 | **手机端优先**：竖屏、触摸交互、TapTap 小游戏容器是真实目标；Chrome 仅作预览 |
 | 上传物 | Cocos 构建生成的 TapTap 小游戏包；不再以 React `dist` 作为主发布物 |
 | 登录 | 双模式：`dev` 万能登录（仅非生产开放）/ `prod` TapTap OAuth2；配置守卫 |
 | 商业化 | **灵石不可购 → 无内购 → 免版号**，以「开放试玩」形式长期运营 |
@@ -29,6 +30,21 @@
 - Chrome / Cocos 本地预览使用 Mock 登录；进入 TapTap 小游戏调试容器后再调用运行时注入的 `tap.login()`。
 - 后端仍由 `bhgt-server` 提供认证、角色初始化、节点与存档接口。
 - 正式上传应使用 Cocos Creator 的 TapTap/小游戏构建流程，不能把 Cocos 源码当作普通 Vite `dist` 上传。
+
+### 当前登录时序
+
+```text
+玩家点击「TapTap 登录」
+  → 玩家端平台适配层调用 tap.login()
+  → TapTap 容器返回一次性 code
+  → 玩家端把 code 发送给 bhgt-server
+  → bhgt-server 调 TapTap 服务端接口换取 openid
+  → bhgt-server 签发 BHGT JWT
+  → 玩家端请求 /api/game/role
+  → 没有角色则进入创建角色，有角色则进入当前节点
+```
+
+浏览器 / Web Mobile 预览没有真实 TapTap 容器，因此平台适配层会模拟 `tap.login()` 返回 code，再走开发认证接口；这只是替代平台第一步，后续 JWT、角色查询和游戏流程保持一致。
 
 ## 2. 历史方案：两条上架通道的关键区别（暂时废弃）
 
