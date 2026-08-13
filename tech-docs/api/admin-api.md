@@ -645,6 +645,7 @@ DELETE /api/admin/talent-qualities/:code
 ```ts
 {
   code: 'global',                 // 固定值
+  startNodeId: string | null;     // 新玩家起始节点 ObjectId，全局只维护一个值
   basicInfo: {
     name: string;                 // 游戏名
     version: string;              // 版本

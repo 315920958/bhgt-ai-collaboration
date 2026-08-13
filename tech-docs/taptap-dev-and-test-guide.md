@@ -12,26 +12,29 @@
 >
 > **终端原则**：BHGT 手机端优先，主要验证手机竖屏、触摸操作和 TapTap 小游戏容器；桌面 Chrome 只用于辅助预览。
 
+> **Cocos 编译原则（重要）**：源码修改不等同于预览运行产物已经更新。若源码看起来已修改、运行效果却仍是旧行为，先停止预览，确认资源已重新导入并重新编译，再重新运行；必要时关闭并重新打开项目。协作排查时，如果代码逻辑成立但现象不一致，优先确认“这次是否已经重新编译/重新运行”，并检查 `temp/programming/packer-driver/targets/preview` 是否包含最新代码。
+
 ---
 
 ## 1. 环境分级速查
 
 | 环境 | NODE_ENV | 登录方式 | 是否需要 TapTap appid | 前端访问地址 |
 |---|---|---|---|---|
-| 本地开发 | Cocos Creator 预览 | Chrome Mock 登录 | ❌ 不需要 | Cocos 编辑器预览 |
-| TapTap 联调 / 测试 | TapTap 调试工具 + 真机容器 | `tap.login()` / 平台登录 | ✅ 需要 | TapTap 调试工具二维码 |
-| 生产 | Cocos 构建后的 TapTap 小游戏包 | 真实 TapTap 登录 | ✅ 需要 | TapTap 小游戏容器 |
+| 本地开发 / Web 试玩 | Cocos Creator 浏览器预览或 Nginx Web 构建 | 真实 TapTap **设备码扫码登录** | ✅ 需要 | 浏览器页面显示二维码 |
+| TapTap 联调 / 测试 | TapTap 调试工具 + 真机容器 | 宿主 `tap.login()` | ✅ 需要 | TapTap 调试工具二维码 |
+| 生产 | Cocos 构建后的 TapTap 小游戏包 | 宿主 `tap.login()` | ✅ 需要 | TapTap 小游戏容器 |
 
-**核心原则**：TapTap 不分环境（一份 appid 一份 secret，全环境共用），但登录方式按 NODE_ENV 分流——dev-login 只在非 production 放行。
+**核心原则**：TapTap 不分环境（一份 Client ID / 凭据全环境共用）；登录方式由运行能力分流——检测到 `tap.login` 则使用小游戏宿主，否则使用真实 OAuth2 设备码扫码。玩家端不使用 Mock 身份。
 
 ### 当前玩家端调试流程
 
 1. 用 Cocos Creator 3.8.8 打开 `bhgt-cocos-client`（远程仓库名仍是 `bhgt-h5-client`）。
 2. 打开 `assets/scenes/Main.scene`，点击编辑器运行按钮查看首页。
-3. Chrome / Web Mobile 本地预览使用“模拟 TapTap 登录”（模拟 code → dev-login → JWT）；普通 Chrome 不能验证真实 `tap.login()`。
-4. 接入 TapTap 调试工具后，通过真机 TapTap 容器验证 `tap.login()`、code 上送服务端及角色初始化。
+3. 修改脚本后，先停止当前预览，等待 Cocos 完成脚本重新导入/编译，再重新运行；若预览仍表现为旧代码，关闭并重新打开 Cocos 项目。
+4. Chrome / Web Mobile 本地预览点击登录后显示真实 TapTap 扫码二维码；后端取得真实 `openid` 后创建/读取角色。
+5. 接入 TapTap 调试工具后，通过真机 TapTap 容器验证 `tap.login()`、code 上送服务端及角色初始化。
 
-登录按钮的正确时序是“先平台、后服务端”：不能跳过 `tap.login()` 直接请求 BHGT 登录接口。浏览器预览只是用模拟平台适配器替代真实 `tap.login()`，真实 TapTap 调试必须在 TapTap 容器中调用 SDK。
+登录按钮的正确时序是“先真实 TapTap 授权、后服务端”：小游戏容器使用 `tap.login()`；浏览器使用设备码扫码。两者都不能直接伪造 BHGT 登录态。
 
 以下旧 H5 章节中的 React、4002、H5 OAuth 回调和 `dist` 流程属于历史方案记录，暂时不作为当前玩家端操作依据；服务端凭据与 code 换 openid 的部分仍可作为接口参考。
 
@@ -82,7 +85,7 @@ echo | openssl s_client -connect sixonehub.site:443 -servername sixonehub.site 2
 
 ### 3.1 server 侧（`bhgt-server/.env.*`）
 
-`development` / `test` / `example` 三个文件都已写入（`production` 仍是旧占位，等生产部署时另议）：
+`development` / `test` / `production` / `example` 四个文件均已写入同一套 TapTap 凭据：
 
 | Key | 值 |
 |---|---|
@@ -91,19 +94,30 @@ echo | openssl s_client -connect sixonehub.site:443 -servername sixonehub.site 2
 | `TAPTAP_SERVER_SECRET` | `vRvGl51esrL0yt8q...` |
 | `TAPTAP_CLIENT_PUBLIC_KEY` | `MIIBIjANBgkqhkiG9w0...` |
 | `TAPTAP_REDIRECT_URI` | `https://sixonehub.site/api/auth/taptap/callback` |
+| `TAPTAP_MINIGAME_APP_ID` | `tapmcmzigyn5dwcqds` |
+| `TAPTAP_MINIGAME_SECRET` | `sQp2gXwauBubTomL5sxBvC7xgZMuuNc9`（仅服务端，禁止写入客户端） |
 
 **项目硬性规则**：所有 `.env.*` 文件进 git 跟踪、团队共享（无 `.env.*` ignore）。生产密钥现已随仓库分发，团队自行评估是否轮换。
 
-### 3.2 h5 侧（`bhgt-h5-client/.env.*`）
+### 3.2 玩家客户端（`bhgt-cocos-client`）
 
-`development` / `test` / `example` 三个文件都已写入：
+当前 Cocos 玩家端**不保存任何 TapTap 凭据**：
 
-| Key | 值 |
-|---|---|
-| `VITE_TAPTAP_CLIENT_ID` | `uhgnomb86qttlu987a`（构建时注入） |
-| `VITE_TAPTAP_REDIRECT_URI` | `https://sixonehub.site/api/auth/taptap/callback` |
+| 运行环境 | 客户端登录动作 | 凭据所在位置 |
+|---|---|---|
+| 普通浏览器 / Nginx Web 试玩 | 请求服务端创建 OAuth2 设备码，显示二维码并轮询 | `TAPTAP_CLIENT_ID` 仅由服务端使用 |
+| TapTap 小游戏调试器、测试包、正式包 | 调用宿主注入的 `tap.login()` | 小游戏 ID/测试权限由 TapTap 后台与包体配置管理；不写入游戏脚本 |
 
-h5 侧**无需**写 `TAPTAP_SERVER_SECRET` 或 `TAPTAP_CLIENT_PUBLIC_KEY`——换 token 只在服务端发生，前端持有它们既无意义又会被反编译暴露（团队内无保密顾虑，仅为架构整洁）。
+客户端**绝不**写 `TAPTAP_CLIENT_TOKEN`、`TAPTAP_SERVER_SECRET` 或 `TAPTAP_CLIENT_PUBLIC_KEY`。`Client ID` 虽是公开标识，但在当前两条客户端流程中也无需注入；设备码申请和用户资料读取均由服务端完成。
+
+### 3.3 玩家登录态持久化
+
+- 真实 TapTap 登录成功后，服务端签发只含 `userId + exp` 的 AES-GCM 密文 token；客户端无法读取或修改其中身份信息。
+- Cocos 玩家端使用 `sys.localStorage` 保存键 `bhgt.auth`：Web 映射到浏览器 localStorage，小游戏包映射到宿主本地存储。恢复登录时，只有服务端明确返回 token 无效/过期才清除本地 token；网络故障或临时接口错误会保留 token，等待下次重试。
+- Cocos 玩家端的后端请求统一经过 `assets/scripts/api-request.ts`：浏览器预览使用 `fetch`，TapTap 小游戏容器使用宿主提供的 `tap.request`。因此修改网络请求代码后必须重新构建并上传测试包，旧包不会自动更新。
+- 下次启动先携带该 token 请求 `GET /api/auth/session`。验证成功则恢复 TapTap 昵称、头像并检查 `game.users`，不再扫码。
+- token 过期、被篡改、用户不存在或 TapTap 绑定不存在时，客户端删除本地 token，再要求玩家重新登录。
+- 当前 token 默认有效期由服务端 `AUTH_TOKEN_EXPIRES_IN_SECONDS` 控制；不在客户端保存 TapTap Access Token、Server Secret 或其他平台密钥。
 
 ---
 

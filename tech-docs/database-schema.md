@@ -108,6 +108,7 @@
 | `password` | string \| null | 否 | 否 | SHA1 hex 哈希（无盐） |
 | `isAdmin` | boolean | 是 | 否 | 是否管理员 |
 | `nickname` | string | 是 | 否 | 显示昵称 |
+| `activeGameUserId` | ObjectId | null | 否 | 否 | **预留字段**：多角色功能上线后指向当前游玩的 `game.users._id`；当前单角色版本不写入 |
 | `loginCode` | string | 否 | 是（稀疏） | 开发环境万能登录码；正式环境不暴露 `/auth/dev-login` |
 | `createdAt` / `updatedAt` | Date | — | — | timestamps |
 
@@ -128,8 +129,9 @@
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `_id` | ObjectId | 是 | |
-| `userId` | ObjectId | 是 | FK → `sys.users._id` |
+| `userId` | ObjectId | 是 | FK → `sys.users._id`；**非唯一**，一个登录账号未来可有多个角色 |
 | `name` | string | 是 | 角色名 |
+| `avatar` | string | 否 | 角色头像 URL；自选头像存 OSS，未自选可沿用 TapTap 头像 |
 | `realm` | string | 是 | 境界（占位字符串） |
 | `attrs` | object | 是 | 占位，后续扩展用 |
 | `createdAt` / `updatedAt` | Date | — | — |
@@ -227,6 +229,7 @@ effect: {
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
 | `_id` | ObjectId | 是 | 固定值，upsert 维护单例 |
+| `startNodeId` | ObjectId | null | 否 | 新角色创建后的起始剧情节点，FK → `config.nodes._id`；全局只维护一个值。当前开发库：`6a7451f0206eeac57fc81f94`（`1.1_n001 / 童年1 / 穿越到来`） |
 | `basicInfo` | `{ name: string; version: string; description?: string }` | 是 | 游戏基本信息 |
 | `openingInit` | `Record<attributeCode, number>` | 是 | 开局初值：仅**属性**（基础/特殊）code → 初始值 |
 | `openingResources` | `{ lifespan: number; spiritStone: number }` | 是 | 资源型初值：寿元、灵石（非属性，独立字段） |
@@ -367,7 +370,7 @@ breakthrough: {
 }
 ```
 
-> 按钮不存独立表，不在 `game.users` 留引用（`currentNodeButtonResult.buttonIds` 改为 `nodeId` 即可，buttons 通过查节点配置拉）。
+> 按钮不存独立表。`game.users.currentNodeInfo.buttons.selectedCodes` 保存的是本角色本次抽中的**按钮业务编号快照**，完整按钮内容仍从 `config.nodes.buttons[]` 读取；这样管理员改配置后可保留角色专属抽取结果，同时允许开发环境主动重置并重抽。
 
 > ⚠️ **剧情配置编号引用（2026-08-09 起）**：事件 → 剧情节点的归属字段为 `nodeBundleCode`，直接填写 `config.nodeBundles.code`；节点完整编号 `code` 为只读派生值：`${nodeBundleCode}_${nodeSubCode}`；按钮 → 下一剧情节点使用 `nextNodeId`，直接填写目标 `config.nodes.code`；按钮本身是节点内嵌子文档，不建立独立引用。相关索引：事件/节点 `code` 全局唯一索引、节点 `nodeBundleCode` 普通索引、`{ nodeBundleCode, nodeSubCode }` 联合唯一索引、`buttons.nextNodeId` 多键索引。仅大阶段仍使用 `stageId: ObjectId`，由 Excel 导入脚本按阶段编号查找后写入。
 >
@@ -384,6 +387,7 @@ breakthrough: {
 | `_id` | ObjectId | 是 | |
 | `userId` | ObjectId | 是 | FK → `sys.users._id` |
 | `name` | string | 是 | 角色名 |
+| `avatar` | string | 否 | 角色头像 URL；自选头像存 OSS，未自选可沿用 TapTap 头像 |
 | `gender` | enum: `male` \| `female` \| `other` | 否 | 玩家选择 |
 | `age` | number | 是 | 0 起，每回合 +1（Q9 已确认） |
 | `createdAt` / `updatedAt` / `rebornAt?` | Date | — | |
@@ -485,9 +489,9 @@ unlockedCgs: [{
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `currentNodeButtonResult` | `{ nodeId: ObjectId; rolledAt: Date }` | 否 | 本节点按钮随机筛选结果，重进不刷新 |
+| `currentNodeInfo` | `{ nodeId: ObjectId; buttons: { selectedCodes: string[]; rolledAt: Date }; ... }` | 否 | 当前节点的角色专属运行时信息；`buttons` 记录本次随机筛选结果，重进不刷新，未来可扩展小游戏进度、展示状态等 |
 
-> 按钮由 `config.nodes.buttons[]` 加载；`game.users` 不存 `buttonIds` 引用（无独立 buttons 表）。
+> 按钮由 `config.nodes.buttons[]` 加载；快照保存 `selectedCodes` 而非 ObjectId，因为按钮是节点内嵌子文档、没有独立 ID。读取节点时仅返回该角色快照命中的按钮。
 
 #### 局外成长（重生保留）
 
@@ -607,7 +611,6 @@ unlockedCgs: [{
 
 1. **`config.items.attributes[]` 中的 `kind: 'buff' | 'debuff'`**：当前标注为可选，UI 用途。是否需要？后续可由前端根据 `value` 符号自动判断。
 2. **`game.users.inventory[].activeEffects` 中 `sceneKey` 的取值规范**：建议用 `'battle:<nodeId>'` / `'minigame:<minigameId>'` 等命名约定，待 S2/S5 设计时确认。
-3. **`game.users.currentNodeButtonResult` 当前只存 `nodeId`**：是否需要缓存 `rolledButtons` 快照以防配置变更？待 S2 节点服务化时确认。
 4. **`game.users.rebornAt` 字段**：当前设为可选，是否需要保留历史重生时间戳数组（用于后期回放 / 统计）？待 S4 设计时确认。
 5. **每种 CG 的最大阶段数**：当前 `collectedCount` 无限递增。本次实现 `config.cgs` 时**未**加 `maxStage` 字段，维持现状；若后期需限制阶段上限，在 `config.cgs` 增 `maxStage` 字段并在解锁逻辑做封顶即可（待 S2/S5 设计确认）。
 

@@ -3,6 +3,7 @@
 > 目标：把肉鸽修仙剧情 H5 小游戏 BHGT 上架 TapTap。
 > 当前状态：**开发者已认证，TapTap 凭据已下发并配置（2026-08-07）**。
 > **方案更新（2026-08-10）**：玩家端已切换为 Cocos Creator 3.8.8 2D 项目。远程仓库仍为 `bhgt-h5-client`，本地目录为 `bhgt-cocos-client`；旧 React H5 方案暂时废弃。
+> **编译排查约定**：Cocos 脚本修改后必须确认编辑器已重新导入/编译并重新运行预览；如果运行结果像是旧代码，优先检查编译产物和项目重启状态，再判断业务代码是否有问题。
 > 本文结论基于 TapTap 官方开发者文档 + 小游戏 API 文档 + 快速上架公告 + 防沉迷规范核对，并经用户拍板。
 
 ---
@@ -141,7 +142,7 @@ B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所�
 
 - 注册开发者（免审，功能受限）/ 认证开发者（约 2 工作日；个人主体=身份证，企业主体=营业执照）。
 - 快速上架可"无需等待认证审核"先发 H5，但正式能力 / 财务仍要认证开发者身份。
-- **2026-08-07 凭据已下发，并已写入各仓库 `.env.*`（见 §6.1）。客户端用 `VITE_TAPTAP_CLIENT_ID` 拼授权地址拿 `code`；服务端用 `TAPTAP_CLIENT_ID` + `TAPTAP_SERVER_SECRET` 在服务端换 `openid`。**
+- **2026-08-11 方案更新：独立 H5/浏览器端不再使用重定向授权码模式，改用 TapTap OAuth2 设备码扫码登录；Cocos TapTap 小游戏包使用宿主 `tap.login()`。两条路线均由服务端完成身份换取和 BHGT 登录态签发。**
 
 ### 6.1 凭据与存储约定（重要）
 
@@ -149,7 +150,7 @@ B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所�
 
 - 所有 `.env.*`（含 server `.env.production` 生产密钥）**均进 git 跟踪、明文留存**，不忽略任何 env 文件。
 - TapTap **不分环境**（dev/test/prod 同一套凭据），故各环境 `.env.*` 写入**完全相同**的凭据，无需按环境区分。
-- `TAPTAP_SERVER_SECRET` / `TAPTAP_CLIENT_PUBLIC_KEY` **仅服务端读取，绝不进入前端构建产物**；`TAPTAP_CLIENT_ID` 为公开标识，前端经 `VITE_TAPTAP_CLIENT_ID` 注入包内（公开，安全）。
+- `TAPTAP_CLIENT_TOKEN` / `TAPTAP_SERVER_SECRET` / `TAPTAP_CLIENT_PUBLIC_KEY` **仅服务端读取，绝不进入前端构建产物**。当前 Cocos 客户端也不注入 `TAPTAP_CLIENT_ID`：设备码由服务端申请，小游戏 `tap.login()` 由 TapTap 宿主提供。
 
 **环境变量映射**
 
@@ -159,12 +160,13 @@ B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所�
 | `TAPTAP_CLIENT_TOKEN` | `i3vMUFmnyYlVaj9ZfmOhogBa8FiYWp2z3pvRkSBG` | server 全环境 | client_token（client-credentials 类调用 / 开放 API 用，当前登录流暂未用） |
 | `TAPTAP_SERVER_SECRET` | `vRvGl51esrL0yt8qA1bcSNI9Ey4gRkMs` | server 全环境，**仅服务端** | code→token 服务端交换的 client_secret |
 | `TAPTAP_CLIENT_PUBLIC_KEY` | `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArzoz1pVURjgwdhfw6kc7sDjMdsFmy6oVtuwlKwVLZiSjrbuWhKU6abaU2q2HqtSz79aGEWsjEgKxB3ZBQgAwXOOaorb6M+Gy0EEwpWySJPv9PcuhaGv543ClFgNtIxv1eb9pHNALXUZV3GZJrXb+0NQ0BxUVfKzqywO21DYv4E9Fnng2kn5phlKCWrA9J8l8laXo6mu2TFdMQmc8T+Cn+pJ5FQPo0YiQh2q1biQ973Mfxqye+AzA0iGXsdVI6kKrCii5YEhWlF1KKhpf3ilzL+kT5keIx82y12sjM5J3b5lWXoS89sD0kxuq7u+yZ6cKud0CWjIiz2EfXPG8tskD7QIDAQAB` | server 全环境，**仅服务端** | RSA 公钥，用于校验 TapTap 回传数据签名（如 mac_token / webhook） |
-| `TAPTAP_REDIRECT_URI` | `https://player.bhgt.sixonehub.site/auth/callback` | server 全环境 | 授权回调地址，**必须与 TapTap 开发者中心登记的回调完全一致**（含协议/路径） |
-| `VITE_TAPTAP_CLIENT_ID` | `uhgnomb86qttlu987a` | h5 全环境 | 前端公开 client_id，构建时注入包内 |
+| `TAPTAP_REDIRECT_URI` | `https://sixonehub.site/api/auth/taptap/callback` | server 全环境 | 旧 OAuth 授权码回调保留配置；当前设备码流程不使用它 |
+| `TAPTAP_MINIGAME_APP_ID` | `tapmcmzigyn5dwcqds` | server 全环境；Cocos 构建配置也使用 | TapTap 小游戏 MiniApp ID；对应 TapTap 开放能力中的“小游戏基本信息” |
+| `TAPTAP_MINIGAME_SECRET` | `sQp2gXwauBubTomL5sxBvC7xgZMuuNc9` | server 全环境，**仅服务端** | TapTap 小游戏 Secret；不得进入客户端代码或构建包 |
 
-**实现状态**：`bhgt-server` `AuthService.taptapLogin` 已由占位升级为真实调用（`callTapTapToken` → `POST https://connect.tapapis.cn/token`，用 client_id+client_secret+code 换 openid/unionid）。仅生产态（或 `AUTH_MODE=taptap`）走此链路；dev 仍走 dev-login。
+**实现状态**：浏览器端调用 `/auth/taptap-device/start` 申请设备码二维码，调用 `/auth/taptap-device/status` 轮询；服务端取得 Access Token 后按 MAC Token 规则查询 TapTap profile，并按真实 `openid` 创建/读取 `tt.users`。小游戏宿主端仍通过 `/auth/taptap-login` 上送 `tap.login()` 返回的 code。
 
-> 待办：回调地址 `TAPTAP_REDIRECT_URI` 需在 TapTap 开发者中心登记；Client Token / Public Key 的用途（client-credentials 开放 API、签名校验）后续按需接入。
+> `TAPTAP_CLIENT_TOKEN` / `TAPTAP_CLIENT_PUBLIC_KEY` 已完整记录在服务端 env 中，当前设备码登录尚未使用；后续接入对应开放 API 或验签功能时再启用。
 
 ---
 

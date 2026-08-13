@@ -43,7 +43,14 @@ OSS_ENDPOINT=https://oss-cn-beijing.aliyuncs.com
 
 > 小团队无秘密：所有凭据明文进 git 共享。技术上，Secret 只服务端需要（OSS 写 / 删 / 列都在后端），放进 H5 bundle 会被反编译暴露且无用途，故本项目 Secret 留在 `bhgt-server/.env.*`；前端只读走三级域名公开 URL。团队内如需前端也持有，无保密顾虑，仅自担反编译暴露风险。
 
-## 五、图片批量上传脚本
+## 五、玩家头像
+
+- 玩家端选择 JPG、PNG 或 WebP，单文件最大 5MB。
+- 客户端调用 `POST /api/game/avatar`，仅传图片 data URL 和玩家 JWT；OSS Secret 不进入客户端。
+- 服务端保存到 `player-avatars/<sys-user-id>/<uuid>.<ext>`，返回公开 URL。
+- 创建角色时把最终 URL 写入 `game.users.avatar`；未重新选择时可直接沿用 TapTap 头像。
+
+## 六、图片批量上传脚本
 
 位置：`scripts/upload-images-to-oss.mjs`（依赖装在 `scripts/node_modules`，已被 `.gitignore` 忽略）。
 
