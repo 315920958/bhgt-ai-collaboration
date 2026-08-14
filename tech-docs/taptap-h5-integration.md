@@ -142,7 +142,7 @@ B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所�
 
 - 注册开发者（免审，功能受限）/ 认证开发者（约 2 工作日；个人主体=身份证，企业主体=营业执照）。
 - 快速上架可"无需等待认证审核"先发 H5，但正式能力 / 财务仍要认证开发者身份。
-- **2026-08-11 方案更新：独立 H5/浏览器端不再使用重定向授权码模式，改用 TapTap OAuth2 设备码扫码登录；Cocos TapTap 小游戏包使用宿主 `tap.login()`。两条路线均由服务端完成身份换取和 BHGT 登录态签发。**
+- **2026-08-14 方案更新：独立浏览器 H5 使用 TapTap OAuth2 设备码扫码登录；上传到 TapTap 的 H5 包经容器验证后可调用宿主注入的 `tap.login()`，并将一次性 code 发送至独立 `/auth/taptap-h5-login` 接口。Cocos 小游戏包继续使用 `/auth/taptap-login`。两条容器路线的 MiniApp 凭据必须严格隔离。**
 
 ### 6.1 凭据与存储约定（重要）
 
@@ -163,8 +163,10 @@ B 通道里"运行时没有 DOM"不成立，React 整套 UI 可直接跑，所�
 | `TAPTAP_REDIRECT_URI` | `https://sixonehub.site/api/auth/taptap/callback` | server 全环境 | 旧 OAuth 授权码回调保留配置；当前设备码流程不使用它 |
 | `TAPTAP_MINIGAME_APP_ID` | `tapmcmzigyn5dwcqds` | server 全环境；Cocos 构建配置也使用 | TapTap 小游戏 MiniApp ID；对应 TapTap 开放能力中的“小游戏基本信息” |
 | `TAPTAP_MINIGAME_SECRET` | `sQp2gXwauBubTomL5sxBvC7xgZMuuNc9` | server 全环境，**仅服务端** | TapTap 小游戏 Secret；不得进入客户端代码或构建包 |
+| `TAPTAP_H5_APP_ID` | `tapmcismttq0iktp4z` | server 全环境，**仅服务端** | 上传到 TapTap 的 H5 包对应 MiniApp ID；仅供 `/auth/taptap-h5-login` 使用 |
+| `TAPTAP_H5_SECRET` | `bbVdIdcczahhMcqbo44je2B9Kt62gJBc` | server 全环境，**仅服务端** | 上传到 TapTap 的 H5 包对应 Secret；不得进入客户端代码或构建包 |
 
-**实现状态**：浏览器端调用 `/auth/taptap-device/start` 申请设备码二维码，调用 `/auth/taptap-device/status` 轮询；服务端取得 Access Token 后按 MAC Token 规则查询 TapTap profile，并按真实 `openid` 创建/读取 `tt.users`。小游戏宿主端仍通过 `/auth/taptap-login` 上送 `tap.login()` 返回的 code。
+**实现状态**：浏览器端调用 `/auth/taptap-device/start` 申请设备码二维码，调用 `/auth/taptap-device/status` 轮询；服务端取得 Access Token 后按 MAC Token 规则查询 TapTap profile，并按真实 `openid` 创建/读取 `tt.users`。TapTap H5 容器通过 `/auth/taptap-h5-login` 上送 `tap.login()` 返回的 code；Cocos 小游戏宿主端通过 `/auth/taptap-login` 上送 code。两条接口分别读取 H5 与小游戏的独立 MiniApp 凭据。
 
 > `TAPTAP_CLIENT_TOKEN` / `TAPTAP_CLIENT_PUBLIC_KEY` 已完整记录在服务端 env 中，当前设备码登录尚未使用；后续接入对应开放 API 或验签功能时再启用。
 
